@@ -1,0 +1,10 @@
+.h-6 {
+  height: 4rem !important;
+}
+.header-brand-img {
+  height: 3rem;
+}
+.leading-none {
+  line-height: 1 !important;
+  padding-top: 0.5rem !important;
+}
