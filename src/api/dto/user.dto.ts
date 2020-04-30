@@ -1,6 +1,6 @@
 export interface UserDto {
     rut: string;
-    password: string;
+    password?: string;
     name: string;
     lastName: string;
     email: string;

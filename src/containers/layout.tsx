@@ -20,6 +20,7 @@ class Layout extends React.Component<Props> {
     let user;
     let fullName;
     let role;
+    let icon;
     try {
       if (session !== null) {
         user = session.userDto;
@@ -31,7 +32,7 @@ class Layout extends React.Component<Props> {
     const navBarItems = [
       {
         value: "Inicio",
-        to: "/",
+        to: "/agenda/",
         icon: "home",
         LinkComponent: withRouter(NavLink),
         useExact: true,
@@ -51,17 +52,17 @@ class Layout extends React.Component<Props> {
             subItems: [
               {
                 value: "Crear hora médica",
-                to: "/reservas/crear",
+                to: "/agenda/reservas/crear",
                 LinkComponent: withRouter(NavLink),
               },
               {
                 value: "Mis reservas",
-                to: "/reservas",
+                to: "/agenda/reservas",
                 LinkComponent: withRouter(NavLink),
               },
               {
                 value: "Reservar hora médica",
-                to: "/reservas/reservar",
+                to: "/agenda/reservas/reservar",
                 LinkComponent: withRouter(NavLink),
               },
             ],
@@ -73,22 +74,22 @@ class Layout extends React.Component<Props> {
             subItems: [
               {
                 value: "Usuarios",
-                to: "/admin/usuarios",
+                to: "/agenda/admin/usuarios",
                 LinkComponent: withRouter(NavLink),
               },
               {
                 value: "Doctores",
-                to: "/admin/doctores",
+                to: "/agenda/admin/doctores",
                 LinkComponent: withRouter(NavLink),
               },
               {
                 value: "Centros médicos",
-                to: "/admin/centros-medicos",
+                to: "/agenda/admin/centros-medicos",
                 LinkComponent: withRouter(NavLink),
               },
               {
                 value: "Especialidades médicas",
-                to: "/admin/especialidades-medicas",
+                to: "/agenda/admin/especialidades-medicas",
                 LinkComponent: withRouter(NavLink),
               },
             ],
@@ -97,9 +98,10 @@ class Layout extends React.Component<Props> {
           config = {
             icon: "cpu",
             value: "Configuración",
-            to: "/configuracion",
+            to: "/agenda/configuracion",
           };
           rol = "Administrador";
+          icon = require('../assets/icons/user-admin.svg');
           break;
         }
         case "DOCTOR": {
@@ -109,12 +111,12 @@ class Layout extends React.Component<Props> {
             subItems: [
               {
                 value: "Crear hora médica",
-                to: "/reservas/crear",
+                to: "/agenda/reservas/crear",
                 LinkComponent: withRouter(NavLink),
               },
               {
                 value: "Mis reservas",
-                to: "/reservas",
+                to: "/agenda/reservas",
                 LinkComponent: withRouter(NavLink),
               },
             ],
@@ -122,6 +124,7 @@ class Layout extends React.Component<Props> {
           admin = undefined;
           config = undefined;
           rol = "Doctor";
+          icon = require('../assets/icons/user-doctor.svg');
           break;
         }
         case "USER": {
@@ -131,12 +134,12 @@ class Layout extends React.Component<Props> {
             subItems: [
               {
                 value: "Mis reservas",
-                to: "/reservas",
+                to: "/agenda/reservas",
                 LinkComponent: withRouter(NavLink),
               },
               {
                 value: "Reservar hora médica",
-                to: "/reservas/reservar",
+                to: "/agenda/reservas/reservar",
                 LinkComponent: withRouter(NavLink),
               },
             ],
@@ -144,6 +147,7 @@ class Layout extends React.Component<Props> {
           admin = undefined;
           config = undefined;
           rol = "Paciente";
+          icon = require('../assets/icons/user-patient.svg');
           break;
         }
         default: {
@@ -165,14 +169,14 @@ class Layout extends React.Component<Props> {
     }
 
     const accountDropdownProps = {
-      avatarURL: "./demo/faces/female/25.jpg",
+      avatarURL: icon,
       name: fullName,
       description: rol,
       options: [
         {
           icon: "user",
           value: "Perfil",
-          to: "/perfil",
+          to: "/agenda/perfil",
           LinkComponent: withRouter(NavLink),
         },
         { isDivider: true },
@@ -188,7 +192,7 @@ class Layout extends React.Component<Props> {
     return (
       <Site.Wrapper
         headerProps={{
-          href: "/",
+          href: "/agenda",
           alt: "Agenda médica",
           imageURL: logo,
           accountDropdown: accountDropdownProps,

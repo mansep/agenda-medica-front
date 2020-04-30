@@ -5,10 +5,12 @@ import { connect } from "react-redux";
 import { Route, Switch, Redirect, withRouter } from "react-router-dom";
 
 import HomePage from "../pages/home";
+import ProfilePage from "../pages/profile";
 import Error404Page from "../pages/error/404";
 import LoginPage from "../pages/auth/login";
 import LogoutPage from "../pages/auth/logout";
 import RegisterPage from "../pages/auth/register";
+import UsersPage from "../pages/admin/users";
 
 type Props = {
   session: any;
@@ -64,8 +66,14 @@ class Routes extends Component<Props> {
         <Route exact path="/login" component={LoginPage} />
         <Route exact path="/logout" component={LogoutPage} />
         <Route exact path="/register" component={RegisterPage} />
-        <PrivateRoute path="/agenda" session={this.props.session}>
+        <PrivateRoute exact path="/agenda" session={this.props.session}>
           <HomePage />
+        </PrivateRoute>
+        <PrivateRoute exact path="/agenda/perfil" session={this.props.session}>
+          <ProfilePage />
+        </PrivateRoute>
+        <PrivateRoute exact path="/agenda/admin/usuarios" session={this.props.session}>
+          <UsersPage />
         </PrivateRoute>
         <Route component={Error404Page} />
       </Switch>

@@ -8,3 +8,7 @@
   line-height: 1 !important;
   padding-top: 0.5rem !important;
 }
+
+.margin-left-auto {
+  margin-left: auto !important;
+}
