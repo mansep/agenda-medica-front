@@ -11,6 +11,7 @@ import LoginPage from "../pages/auth/login";
 import LogoutPage from "../pages/auth/logout";
 import RegisterPage from "../pages/auth/register";
 import UsersPage from "../pages/admin/users";
+import MedicalSpecialityPage from "../pages/admin/medical-speciality";
 
 type Props = {
   session: any;
@@ -75,6 +76,10 @@ class Routes extends Component<Props> {
         <PrivateRoute exact path="/agenda/admin/usuarios" session={this.props.session}>
           <UsersPage />
         </PrivateRoute>
+        <PrivateRoute exact path="/agenda/admin/especialidades-medicas" session={this.props.session}>
+          <MedicalSpecialityPage />
+        </PrivateRoute>
+        
         <Route component={Error404Page} />
       </Switch>
     );

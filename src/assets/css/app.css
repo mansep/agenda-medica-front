@@ -12,3 +12,6 @@
 .margin-left-auto {
   margin-left: auto !important;
 }
+.ant-table {
+  font-size: smaller !important;
+}

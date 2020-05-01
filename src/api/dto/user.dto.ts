@@ -1,4 +1,5 @@
 export interface UserDto {
+    id?: number;
     rut: string;
     password?: string;
     name: string;
@@ -7,5 +8,6 @@ export interface UserDto {
     phone: string;
     mobile: string;
     role?: string;
+    status?: string;
     dateBirth: Date;
 }

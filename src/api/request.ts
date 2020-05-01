@@ -22,7 +22,7 @@ export class Request {
             const sesionObj = JSON.parse(session);
             return {
                 headers: {
-                    Authorization: `Basic ${sesionObj.token}`,
+                    Authorization: `Bearer ${sesionObj.token}`,
                     'Content-Type': 'application/json',
                 },
                 timeout: 1000 * REQUEST_TIMEOUT + 1000,

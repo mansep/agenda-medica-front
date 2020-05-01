@@ -61,7 +61,7 @@ class ProfilePage extends React.Component<Props> {
     }).then((result) => {
       const inputNew = document.getElementById("newPassword") as any;
       const inputCurrent = document.getElementById("currentPassword") as any;
-      console.warn(inputNew);
+      
       if (inputNew !== null && inputCurrent !== null) {
         const newPassword = inputNew.value;
         const currentPassword = inputCurrent.value;
@@ -76,6 +76,7 @@ class ProfilePage extends React.Component<Props> {
       }
     });
   };
+
   render() {
     const {
       rut,
