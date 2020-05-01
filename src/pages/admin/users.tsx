@@ -11,7 +11,7 @@ import {
 import ReactLoading from "react-loading";
 import swal from "sweetalert";
 import Layout from "../../containers/layout";
-import Table from "./users.table";
+import Table from "../../components/admin/users.table";
 import { UserDto } from "../../api/dto/user.dto";
 import { Users } from "../../api/admin/users";
 import { Modal } from "antd";
@@ -440,6 +440,7 @@ export default class UsersPage extends Component {
             </Form.Group>
             <Form.Group label="Rol">
               <Form.Select
+                name="rol"
                 onChange={this.handleChange}
                 onBlur={this.handleBlur}
               >

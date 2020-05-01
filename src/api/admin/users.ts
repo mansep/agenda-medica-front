@@ -9,6 +9,10 @@ export class Users {
         return await request.get('/user/');
     }
 
+    static async getByRole(role: 'ADMIN' | 'USER' | 'DOCTOR') {
+        return await request.get(`/user/roles/${role}`);
+    }
+
     static async get(id?: number) {
         return await request.get(`/user/${id}`);
     }

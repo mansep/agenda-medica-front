@@ -12,6 +12,7 @@ import LogoutPage from "../pages/auth/logout";
 import RegisterPage from "../pages/auth/register";
 import UsersPage from "../pages/admin/users";
 import MedicalSpecialityPage from "../pages/admin/medical-speciality";
+import DoctorsPage from "../pages/admin/doctors";
 
 type Props = {
   session: any;
@@ -73,13 +74,28 @@ class Routes extends Component<Props> {
         <PrivateRoute exact path="/agenda/perfil" session={this.props.session}>
           <ProfilePage />
         </PrivateRoute>
-        <PrivateRoute exact path="/agenda/admin/usuarios" session={this.props.session}>
+        <PrivateRoute
+          exact
+          path="/agenda/admin/usuarios"
+          session={this.props.session}
+        >
           <UsersPage />
         </PrivateRoute>
-        <PrivateRoute exact path="/agenda/admin/especialidades-medicas" session={this.props.session}>
+        <PrivateRoute
+          exact
+          path="/agenda/admin/especialidades-medicas"
+          session={this.props.session}
+        >
           <MedicalSpecialityPage />
         </PrivateRoute>
-        
+        <PrivateRoute
+          exact
+          path="/agenda/admin/doctores"
+          session={this.props.session}
+        >
+          <DoctorsPage />
+        </PrivateRoute>
+
         <Route component={Error404Page} />
       </Switch>
     );
