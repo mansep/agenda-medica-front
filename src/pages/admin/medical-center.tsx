@@ -10,14 +10,14 @@ import {
 import ReactLoading from "react-loading";
 import swal from "sweetalert";
 import Layout from "../../containers/layout";
-import Table from "../../components/admin/medical-speciality.table";
-import { MedicalSpecialityDto } from "../../api/dto/medical-speciality.dto";
-import { MedicalSpeciality } from "../../api/admin/medical-speciality";
+import Table from "../../components/admin/medical-center.table";
+import { MedicalCenterDto } from "../../api/dto/medical-center.dto";
+import { MedicalCenter } from "../../api/admin/medical-center";
 import { Modal, Button } from "antd";
 import * as Validator from "class-validator";
 import { ResponseDto } from "../../api/dto/response.dto";
 
-export default class MedicalSpecialityPage extends Component {
+export default class MedicalCenterPage extends Component {
   state = {
     isLoading: true,
     data: [],
@@ -25,32 +25,38 @@ export default class MedicalSpecialityPage extends Component {
     visible: false,
     confirmLoading: false,
     isNew: false,
-    esp: {} as MedicalSpecialityDto,
+    esp: {} as MedicalCenterDto,
     values: {
       nombre: "",
       estado: "ACTIVE",
       codigo: "",
+      direccion: "",
+      email: "",
+      telefono: "",
     },
     errors: {} as any,
   };
 
   create = () => {
     this.setState({
-      ModalText: "Nueva especialidad médica",
+      ModalText: "Nuevo centro médico",
       visible: true,
       isNew: true,
       values: {
         nombre: "",
         estado: "ACTIVE",
         codigo: "",
+        direccion: "",
+        email: "",
+        telefono: "",
       },
       errors: {} as any,
     });
   };
 
-  edit = (esp: MedicalSpecialityDto) => {
+  edit = (esp: MedicalCenterDto) => {
     this.setState({
-      ModalText: "Editar espacialidad médica",
+      ModalText: "Editar centro médico",
       visible: true,
       isNew: false,
       esp,
@@ -58,31 +64,30 @@ export default class MedicalSpecialityPage extends Component {
         nombre: esp.name,
         codigo: esp.code,
         estado: esp.status,
+        direccion: esp.address,
+        email: esp.email,
+        telefono: esp.phone,
       },
       errors: {} as any,
     });
   };
 
-  delete = (esp: MedicalSpecialityDto) => {
+  delete = (esp: MedicalCenterDto) => {
     swal({
-      title: "Deshabilitar especialidad médica",
-      text: `¿Está seguro que desea deshabilitar la especialidad médica ${esp.name}?`,
+      title: "Deshabilitar centro médico",
+      text: `¿Está seguro que desea deshabilitar el centro médico ${esp.name}?`,
       icon: "warning",
       buttons: ["Cancelar", true],
       dangerMode: true,
     }).then(async (willDelete) => {
       if (willDelete) {
-        const result = await MedicalSpeciality.delete(esp.id);
+        const result = await MedicalCenter.delete(esp.id);
         if (result.error) {
-          swal(
-            "Error al dehabilitar especialidad médica",
-            result.error,
-            "error"
-          );
+          swal("Error al dehabilitar centro médico", result.error, "error");
         } else {
           swal(
             "¡Listo!",
-            "Especialidad médica deshabilitada con éxito",
+            "Centro médico deshabilitado con éxito",
             "success"
           ).then(() => {
             this.loadingData();
@@ -108,11 +113,14 @@ export default class MedicalSpecialityPage extends Component {
       name: values.nombre,
       code: values.codigo,
       status: values.estado,
+      address: values.direccion,
+      email: values.email,
+      phone: values.telefono,
     };
     if (isNew) {
-      result = await MedicalSpeciality.create(espSave);
+      result = await MedicalCenter.create(espSave);
     } else {
-      result = await MedicalSpeciality.update(espSave, esp.id);
+      result = await MedicalCenter.update(espSave, esp.id);
     }
     if (result.error) {
       swal("Lo sentimos", result.error.toString(), "error");
@@ -121,10 +129,9 @@ export default class MedicalSpecialityPage extends Component {
       });
       return;
     }
-
     swal(
       "¡Listo!",
-      `Especialidad médica ${isNew ? "creada" : "editada"} con éxito`,
+      `Centro médico ${isNew ? "creado" : "editado"} con éxito`,
       "success"
     ).then(() => {
       this.loadingData();
@@ -147,6 +154,18 @@ export default class MedicalSpecialityPage extends Component {
     switch (evt.target.name) {
       case "nombre": {
         this.setState({ values: { ...values, nombre: evt.target.value } });
+        break;
+      }
+      case "direccion": {
+        this.setState({ values: { ...values, direccion: evt.target.value } });
+        break;
+      }
+      case "telefono": {
+        this.setState({ values: { ...values, telefono: evt.target.value } });
+        break;
+      }
+      case "email": {
+        this.setState({ values: { ...values, email: evt.target.value } });
         break;
       }
       case "codigo": {
@@ -179,6 +198,23 @@ export default class MedicalSpecialityPage extends Component {
     } else if (Validator.isEmpty(values.nombre)) {
       errors.nombre = "Debe ingresar nombre";
     }
+
+    if (Validator.isEmpty(values.direccion)) {
+      errors.direccion = "Debe ingresar dirección";
+    }
+
+    if (!Validator.isEmail(values.email)) {
+      errors.email = "Email invalido";
+    } else if (Validator.isEmpty(values.email)) {
+      errors.email = "Debe ingresar email";
+    }
+
+    if (!Validator.isPhoneNumber(values.telefono, "CL")) {
+      errors.telefono = "Teléfono invalido";
+    } else if (Validator.isEmpty(values.telefono)) {
+      errors.telefono = "Debe ingresar teéfono";
+    }
+
     this.setState({ errors });
     return errors;
   };
@@ -189,7 +225,7 @@ export default class MedicalSpecialityPage extends Component {
 
   loadingData = async () => {
     this.setState({ isLoading: true });
-    const especialidades = await MedicalSpeciality.getAll();
+    const especialidades = await MedicalCenter.getAll();
     if (especialidades.error) {
       this.setState({ isLoading: false });
       swal("Lo sentimos", especialidades.error, "error");
@@ -226,7 +262,7 @@ export default class MedicalSpecialityPage extends Component {
     } = this.state;
 
     return (
-      <Layout title="Administracion de especialidades médicas">
+      <Layout title="Administracion de centros médicos">
         <Container>
           <Grid.Row>
             <Grid.Col lg={12}>
@@ -237,7 +273,7 @@ export default class MedicalSpecialityPage extends Component {
                     className="float-right margin-left-auto"
                     onClick={this.create}
                   >
-                    Nueva espacialidad médica
+                    Nuevo centro médico
                   </Button>
                 </Card.Header>
                 <Card.Body>
@@ -275,12 +311,45 @@ export default class MedicalSpecialityPage extends Component {
             <FormTextInput
               name="nombre"
               label="Nombre"
-              placeholder="Medicina General"
+              placeholder="Principal"
               onChange={this.handleChange}
               onBlur={this.handleBlur}
               value={values && values.nombre}
               error={errors && errors.nombre}
-            />{" "}
+            />
+            <FormTextInput
+              name="direccion"
+              label="Dirección"
+              placeholder="Av Lib. Bernardo O'higgins 123, Santiago"
+              onChange={this.handleChange}
+              onBlur={this.handleBlur}
+              value={values && values.direccion}
+              error={errors && errors.direccion}
+            />
+            <FormTextInput
+              name="email"
+              label="Email"
+              placeholder="contacto@centromedico.cl"
+              onChange={this.handleChange}
+              onBlur={this.handleBlur}
+              value={values && values.email}
+              error={errors && errors.email}
+            />
+            <Form.Group label="Teléfono">
+              <Form.InputGroup>
+                <Form.InputGroupPrepend>
+                  <Form.InputGroupText>+56</Form.InputGroupText>
+                </Form.InputGroupPrepend>
+                <Form.Input
+                  name="telefono"
+                  placeholder="221876543"
+                  onChange={this.handleChange}
+                  onBlur={this.handleBlur}
+                  value={values && values.telefono}
+                  error={errors && errors.telefono}
+                />
+              </Form.InputGroup>
+            </Form.Group>
             <Form.Group label="Estado">
               <Form.SelectGroup>
                 <Form.SelectGroupItem

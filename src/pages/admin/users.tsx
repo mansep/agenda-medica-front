@@ -3,7 +3,6 @@ import {
   Container,
   Grid,
   Card,
-  Button,
   FormTextInput,
   Form,
   Icon,
@@ -14,7 +13,7 @@ import Layout from "../../containers/layout";
 import Table from "../../components/admin/users.table";
 import { UserDto } from "../../api/dto/user.dto";
 import { Users } from "../../api/admin/users";
-import { Modal } from "antd";
+import { Modal, Button } from "antd";
 import { ValidateRut } from "../../api/validate";
 import * as Validator from "class-validator";
 import moment from "moment";
@@ -332,7 +331,7 @@ export default class UsersPage extends Component {
               <Card>
                 <Card.Header>
                   <Button
-                    color="primary"
+                    type="primary"
                     className="float-right margin-left-auto"
                     onClick={this.create}
                   >

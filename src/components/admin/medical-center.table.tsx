@@ -3,18 +3,12 @@ import { Button } from "tabler-react";
 import { Table, Input, Space } from "antd";
 import Highlighter from "react-highlight-words";
 import { SearchOutlined } from "@ant-design/icons";
-import DoctorsSelectable from "./doctors.selectable";
 
 type Props = {
   data: any;
-  medicalSpecialities;
-  medicalCenters;
-  doctors?: any;
-  setDoctors?: any;
-  onReload: any;
 };
 
-export default class UserMedicalSpecialityTable extends Component<Props> {
+export default class MedicalCenterTable extends Component<Props> {
   state = {
     searchText: "",
     searchedColumn: "",
@@ -101,15 +95,15 @@ export default class UserMedicalSpecialityTable extends Component<Props> {
   };
 
   render() {
-    const { data, medicalCenters, medicalSpecialities, onReload } = this.props;
+    const { data } = this.props;
     const columns = [
       {
-        title: "RUT",
-        dataIndex: "rut",
-        key: "rut",
-        sorter: (a, b) => a.rut.localeCompare(b.rut),
+        title: "Código",
+        dataIndex: "code",
+        key: "code",
+        sorter: (a, b) => a.code.localeCompare(b.code),
         sortDirections: ["descend", "ascend"],
-        ...this.getColumnSearchProps("rut"),
+        ...this.getColumnSearchProps("code"),
       },
       {
         title: "Nombre",
@@ -120,28 +114,40 @@ export default class UserMedicalSpecialityTable extends Component<Props> {
         ...this.getColumnSearchProps("name"),
       },
       {
-        title: "Apellidos",
-        dataIndex: "lastName",
-        key: "lastName",
-        sorter: (a, b) => a.lastName.localeCompare(b.lastName),
+        title: "Dirección",
+        dataIndex: "address",
+        key: "address",
+        sorter: (a, b) => a.address.localeCompare(b.address),
         sortDirections: ["descend", "ascend"],
-        ...this.getColumnSearchProps("lastName"),
+        ...this.getColumnSearchProps("address"),
       },
       {
-        title: "Centros médicos",
-        dataIndex: "centros",
-        key: "centros",
-        sorter: (a, b) => a.centros.localeCompare(b.centros),
+        title: "Email",
+        dataIndex: "email",
+        key: "email",
+        sorter: (a, b) => a.email.localeCompare(b.email),
         sortDirections: ["descend", "ascend"],
-        ...this.getColumnSearchProps("name"),
+        ...this.getColumnSearchProps("email"),
       },
       {
-        title: "Especialidades",
-        dataIndex: "especialidades",
-        key: "especialidades",
-        sorter: (a, b) => a.especialidades.localeCompare(b.especialidades),
+        title: "Teléfono",
+        dataIndex: "phone",
+        key: "phone",
+        sorter: (a, b) => a.phone.localeCompare(b.phone),
         sortDirections: ["descend", "ascend"],
-        ...this.getColumnSearchProps("name"),
+        ...this.getColumnSearchProps("phone"),
+      },
+      {
+        title: "Estado",
+        dataIndex: "estado",
+        key: "estado",
+        sorter: (a, b) => a.estado.localeCompare(b.estado),
+        sortDirections: ["descend", "ascend"],
+      },
+      {
+        title: "Opciones",
+        dataIndex: "option",
+        key: "option",
       },
     ] as any;
 
@@ -149,21 +155,11 @@ export default class UserMedicalSpecialityTable extends Component<Props> {
       <Table
         columns={columns}
         dataSource={data}
-        expandable={{
-          expandedRowRender: (record) => (
-            <DoctorsSelectable
-              user={record}
-              medicalCenters={medicalCenters}
-              medicalSpecialities={medicalSpecialities}
-              onReload={onReload}
-            />
-          ),
-        }}
         locale={{
           filterTitle: "Buscar",
           filterConfirm: "Buscar",
           filterReset: "Limpiar",
-          emptyText: "No hay doctores",
+          emptyText: "No hay centros médicos",
         }}
       />
     );

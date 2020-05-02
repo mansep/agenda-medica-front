@@ -8,7 +8,7 @@ type Props = {
   data: any;
 };
 
-export default class UsersPage extends Component<Props> {
+export default class MedicalSpecialityTable extends Component<Props> {
   state = {
     searchText: "",
     searchedColumn: "",
