@@ -66,7 +66,7 @@ export class Request {
             }
             return {
                 status: error.status,
-                error: error,
+                error: error.toString(),
                 data: undefined,
             }
         }
@@ -101,7 +101,7 @@ export class Request {
             }
             return {
                 status: error.status,
-                error: error,
+                error: error.toString(),
                 data: undefined,
             }
         }
@@ -136,7 +136,7 @@ export class Request {
             }
             return {
                 status: error.status,
-                error: error,
+                error: error.toString(),
                 data: undefined,
             }
         }
@@ -171,7 +171,7 @@ export class Request {
             }
             return {
                 status: error.status,
-                error: error,
+                error: error.toString(),
                 data: undefined,
             }
         }
