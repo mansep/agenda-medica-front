@@ -1,99 +1,95 @@
+
 import React, { Component } from "react";
-import {
-  Container,
-  Grid,
-  Card,
-  FormTextInput,
-  Form,
-  Icon,
-} from "tabler-react";
+import { Container, Grid, Card, FormTextInput, Form, Icon } from "tabler-react";
 import ReactLoading from "react-loading";
 import swal from "sweetalert";
 import Layout from "../../containers/layout";
-import Table from "../../components/admin/medical-speciality.table";
-import { MedicalSpecialityDto } from "../../api/dto/medical-speciality.dto";
-import { MedicalSpeciality } from "../../api/admin/medical-speciality";
+import Table from "../../components/admin/medical-building.table";
+import { MedicalBuildingDto } from "../../api/dto/medical-building.dto";
+import { MedicalBuilding } from "../../api/admin/medical-building";
 import { Modal, Button } from "antd";
 import * as Validator from "class-validator";
 import { ResponseDto } from "../../api/dto/response.dto";
+import { MedicalCenterDto } from "../../api/dto/medical-center.dto";
+import { MedicalCenter } from "../../api/admin/medical-center";
 
-export default class MedicalSpecialityPage extends Component {
+export default class MedicalBuildingPage extends Component {
   state = {
     isLoading: true,
     data: [],
+    centers: [],
+    buildings: [],
+    centroMedico: null,
     ModalText: "",
     visible: false,
     confirmLoading: false,
     isNew: false,
-    esp: {} as MedicalSpecialityDto,
+    edificio: {} as MedicalBuildingDto,
     values: {
       nombre: "",
       estado: "ACTIVE",
       codigo: "",
+      centroMedico: "",
     },
     errors: {} as any,
   };
 
   create = () => {
     this.setState({
-      ModalText: "Nueva especialidad médica",
+      ModalText: "Nuevo edificio",
       visible: true,
       isNew: true,
       values: {
         nombre: "",
         estado: "ACTIVE",
         codigo: "",
+        centroMedico: "",
       },
       errors: {} as any,
     });
   };
 
-  edit = (esp: MedicalSpecialityDto) => {
+  edit = (edificio: MedicalBuildingDto) => {
     this.setState({
-      ModalText: "Editar espacialidad médica",
+      ModalText: "Editar edificio",
       visible: true,
       isNew: false,
-      esp,
+      edificio,
       values: {
-        nombre: esp.name,
-        codigo: esp.code,
-        estado: esp.status,
+        nombre: edificio.name,
+        codigo: edificio.code,
+        estado: edificio.status,
+        centroMedico: edificio.medicalCenter.id,
       },
       errors: {} as any,
     });
   };
 
-  delete = (esp: MedicalSpecialityDto) => {
+  delete = (edificio: MedicalBuildingDto) => {
     swal({
-      title: "Deshabilitar especialidad médica",
-      text: `¿Está seguro que desea deshabilitar la especialidad médica ${esp.name}?`,
+      title: "Deshabilitar edificio",
+      text: `¿Está seguro que desea deshabilitar el edificio ${edificio.name}?`,
       icon: "warning",
       buttons: ["Cancelar", true],
       dangerMode: true,
     }).then(async (willDelete) => {
       if (willDelete) {
-        const result = await MedicalSpeciality.delete(esp.id);
+        const result = await MedicalBuilding.delete(edificio.id);
         if (result.error) {
-          swal(
-            "Error al dehabilitar especialidad médica",
-            result.error.toString(),
-            "error"
-          );
+          swal("Error al dehabilitar edificio", result.error.toString(), "error");
         } else {
-          swal(
-            "¡Listo!",
-            "Especialidad médica deshabilitada con éxito",
-            "success"
-          ).then(() => {
-            this.loadingData();
-          });
+          swal("¡Listo!", "Edificio deshabilitado con éxito", "success").then(
+            () => {
+              this.loadingEdificios();
+            }
+          );
         }
       }
     });
   };
 
   handleOk = async () => {
-    const { isNew, esp, values } = this.state;
+    const { isNew, edificio, values, centroMedico } = this.state;
     const errors = this.getErrores();
     if (Object.keys(errors).length > 0) {
       swal("Lo sentimos", "Debe corregir errores antes de seguir", "error");
@@ -104,15 +100,18 @@ export default class MedicalSpecialityPage extends Component {
     });
     let result: ResponseDto;
 
-    const espSave = {
+    const buildSave = {
       name: values.nombre,
       code: values.codigo,
       status: values.estado,
-    };
+      medicalCenter: {
+        id: Number(centroMedico),
+      } as MedicalCenterDto,
+    } as MedicalBuildingDto;
     if (isNew) {
-      result = await MedicalSpeciality.create(espSave);
+      result = await MedicalBuilding.create(buildSave);
     } else {
-      result = await MedicalSpeciality.update(espSave, esp.id);
+      result = await MedicalBuilding.update(buildSave, edificio.id);
     }
     if (result.error) {
       swal("Lo sentimos", result.error.toString(), "error");
@@ -121,13 +120,12 @@ export default class MedicalSpecialityPage extends Component {
       });
       return;
     }
-
     swal(
       "¡Listo!",
-      `Especialidad médica ${isNew ? "creada" : "editada"} con éxito`,
+      `Edificio ${isNew ? "creado" : "editado"} con éxito`,
       "success"
     ).then(() => {
-      this.loadingData();
+      this.loadingEdificios();
     });
     this.setState({
       visible: false,
@@ -165,7 +163,7 @@ export default class MedicalSpecialityPage extends Component {
   };
 
   getErrores = () => {
-    const { values } = this.state;
+    const { values, centroMedico } = this.state;
     let errors = {} as any;
 
     if (!Validator.isAlpha(values.codigo, "es-ES")) {
@@ -179,6 +177,11 @@ export default class MedicalSpecialityPage extends Component {
     } else if (Validator.isEmpty(values.nombre)) {
       errors.nombre = "Debe ingresar nombre";
     }
+
+    if (Validator.isEmpty(centroMedico)) {
+      errors.centroMedico = "Debe seleccionar centro médico";
+    }
+
     this.setState({ errors });
     return errors;
   };
@@ -189,16 +192,31 @@ export default class MedicalSpecialityPage extends Component {
 
   loadingData = async () => {
     this.setState({ isLoading: true });
-    const especialidades = await MedicalSpeciality.getAll();
-    if (especialidades.error) {
+    const centros = await MedicalCenter.getAll();
+    if (centros.error) {
       this.setState({ isLoading: false });
-      swal("Lo sentimos", especialidades.error, "error");
+      swal("Lo sentimos", centros.error, "error");
       return;
     }
-    const data = especialidades.data.map((item) => {
-      item.estado = item.status === "ACTIVE" ? "Activa" : "Deshabilitado";
+    this.setState({ isLoading: false, centers: centros.data });
+  };
+
+  loadingEdificios = async () => {
+    const { centroMedico } = this.state;
+    if (isNaN(Number(centroMedico))) return;
+    this.setState({ isLoading: true });
+    const centro = await MedicalBuilding.getByMedicalCenter(
+      Number(centroMedico)
+    );
+    if (centro.error) {
+      this.setState({ isLoading: false });
+      swal("Lo sentimos", centro.error, "error");
+      return;
+    }
+    const data = centro.data.map((item) => {
+      item.estado = item.status === "ACTIVE" ? "Activo" : "Deshabilitado";
       item.option = (
-        <Form.InputGroup append>
+        <Form.InputGroup append key={String(item.id)}>
           <Button onClick={() => this.edit(item)}>
             <Icon prefix="fe" name="edit-2" />
           </Button>
@@ -216,6 +234,8 @@ export default class MedicalSpecialityPage extends Component {
 
   render() {
     const {
+      centers,
+      centroMedico,
       isLoading,
       visible,
       confirmLoading,
@@ -225,28 +245,47 @@ export default class MedicalSpecialityPage extends Component {
       data,
     } = this.state;
 
+    const options = centers.map((item: any) => {
+      return <option key={String(item.id)} value={String(item.id)}>{item.name}</option>;
+    });
     return (
-      <Layout title="Administracion de especialidades médicas">
+      <Layout title="Administracion de edificios">
         <Container>
           <Grid.Row>
             <Grid.Col lg={12}>
               <Card>
                 <Card.Header>
-                  <Button
-                    type="primary"
-                    className="float-right margin-left-auto"
-                    onClick={this.create}
-                  >
-                    Nueva espacialidad médica
-                  </Button>
+                  {centroMedico ? (
+                    <Button
+                      type="primary"
+                      className="float-right margin-left-auto"
+                      onClick={this.create}
+                    >
+                      Nuevo edificio
+                    </Button>
+                  ) : null}
                 </Card.Header>
                 <Card.Body>
+                  <Form.Group label="Centro Médico">
+                    <Form.Select
+                      name="centroMedicoLista"
+                      onChange={(evt) => {
+                        this.setState(
+                          { centroMedico: evt.target.value },
+                          this.loadingEdificios
+                        );
+                      }}
+                    >
+                      <option>Seleccione</option>
+                      {options}
+                    </Form.Select>
+                  </Form.Group>
                   {isLoading ? (
                     <div className="d-flex justify-content-center">
                       <ReactLoading type="bubbles" color="#316CBE" />
                     </div>
                   ) : (
-                    <Table data={data} />
+                    <div>{centroMedico ? <Table data={data} /> : null}</div>
                   )}
                 </Card.Body>
               </Card>
@@ -275,16 +314,16 @@ export default class MedicalSpecialityPage extends Component {
             <FormTextInput
               name="nombre"
               label="Nombre"
-              placeholder="Medicina General"
+              placeholder="Principal"
               onChange={this.handleChange}
               onBlur={this.handleBlur}
               value={values && values.nombre}
               error={errors && errors.nombre}
-            />{" "}
+            />
             <Form.Group label="Estado">
               <Form.SelectGroup>
                 <Form.SelectGroupItem
-                  label="Activa"
+                  label="Activo"
                   name="estado"
                   value="ACTIVE"
                   onChange={this.handleChange}

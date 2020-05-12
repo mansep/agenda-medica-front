@@ -10,4 +10,6 @@ export interface UserDto {
     role?: string;
     status?: string;
     dateBirth: Date;
+    userMedicalSpecialities?: any[];
+    userMedicalCenters?: any[];
 }

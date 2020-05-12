@@ -122,7 +122,7 @@ class RegisterPage extends React.Component<Props> {
               localStorage.setItem("session", JSON.stringify(result.data));
               this.props.history.push("/agenda");
             } else {
-              swal("Lo sentimos", result.error, "error");
+              swal("Lo sentimos", result.error.toString(), "error");
             }
           } catch (error) {
             swal("Lo sentimos", error, "error");

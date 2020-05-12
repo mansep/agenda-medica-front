@@ -4,7 +4,6 @@ import {
   Container,
   Grid,
   Card,
-  Button,
   Form,
   Comment,
   FormTextInput,
@@ -20,6 +19,9 @@ import { bindActionCreators } from "redux";
 import { setSession } from "../redux/action";
 
 import Layout from "../containers/layout";
+import { Auth } from "../api/auth";
+import { Button, Modal } from "antd";
+import { ChangePasswordDto } from "../api/dto/change-password.dto";
 
 type Props = {
   session: any;
@@ -27,54 +29,88 @@ type Props = {
 };
 
 class ProfilePage extends React.Component<Props> {
-  changePass = () => {
-    swal({
-      text: "Cambio de contraseña",
-      buttons: {
-        cancel: "Cancelar",
-        cambia: { text: "Cambiar contraseña", value: true },
-      },
-      content: (
-        <div>
-          <div className="form-group">
-            <label className="form-label">Contraseña Actual</label>
-            <input
-              id="currentPassword"
-              name="password"
-              className="form-control"
-              type="password"
-              placeholder="**********"
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Nueva Contraseña</label>
-            <input
-              id="newPassword"
-              name="new_password"
-              className="form-control"
-              type="password"
-              placeholder="**********"
-            />
-          </div>
-        </div>
-      ),
-    }).then((result) => {
-      const inputNew = document.getElementById("newPassword") as any;
-      const inputCurrent = document.getElementById("currentPassword") as any;
-      
-      if (inputNew !== null && inputCurrent !== null) {
-        const newPassword = inputNew.value;
-        const currentPassword = inputCurrent.value;
-        if (Validator.isEmpty(newPassword)) {
-          swal("Compruebe", "Debe ingresar password actual", "error");
-          return;
-        }
-        if (Validator.isEmpty(currentPassword)) {
-          swal("Compruebe", "Debe ingresar password nuevo", "error");
-          return;
-        }
-      }
+  state = {
+    visible: false,
+    values: {
+      contrasenaActual: "",
+      contrasenaNueva: "",
+    },
+    confirmLoading: false,
+    errors: {} as any,
+  };
+
+  changePass = async () => {
+    const { contrasenaActual, contrasenaNueva } = this.state.values;
+    const newPassword = contrasenaNueva;
+    const currentPassword = contrasenaActual;
+    if (Validator.isEmpty(newPassword)) {
+      swal("Compruebe", "Debe ingresar password actual", "error");
+      return;
+    }
+    if (Validator.isEmpty(currentPassword)) {
+      swal("Compruebe", "Debe ingresar password nuevo", "error");
+      return;
+    }
+    this.setState({ confirmLoading: true });
+    const change: ChangePasswordDto = {
+      passwordCurrent: currentPassword,
+      passwordNew: newPassword,
+    };
+    const result = await Auth.changePassword(change);
+    if (result.error) {
+      swal("Lo sentimos", result.error.toString(), "error");
+      this.setState({
+        confirmLoading: false,
+      });
+      return;
+    }
+
+    swal("¡Listo!", `Contraseña cambiada con éxito`, "success");
+    this.setState({ confirmLoading: false, visible: false });
+  };
+
+  handleCancel = () => {
+    this.setState({
+      visible: false,
     });
+  };
+
+  handleChange = (evt) => {
+    const { values } = this.state;
+
+    switch (evt.target.name) {
+      case "contrasenaActual": {
+        this.setState({
+          values: { ...values, contrasenaActual: evt.target.value },
+        });
+        break;
+      }
+      case "contrasenaNueva": {
+        this.setState({
+          values: { ...values, contrasenaNueva: evt.target.value },
+        });
+        break;
+      }
+    }
+  };
+
+  handleBlur = (evt) => {
+    this.getErrores();
+  };
+
+  getErrores = () => {
+    const { values } = this.state;
+    let errors = {} as any;
+    if (Validator.isEmpty(values.contrasenaActual)) {
+      errors.contrasenaActual = "Debe ingresar contraseña actual";
+    }
+
+    if (Validator.isEmpty(values.contrasenaNueva)) {
+      errors.contrasenaNueva = "Debe ingresar nueva contraseña";
+    }
+
+    this.setState({ errors });
+    return errors;
   };
 
   render() {
@@ -87,6 +123,8 @@ class ProfilePage extends React.Component<Props> {
       dateBirth,
       mobile,
     } = this.props.session.userDto;
+
+    const { values, errors, confirmLoading, visible } = this.state;
     return (
       <Layout>
         <div className="my-3 my-md-5">
@@ -189,11 +227,16 @@ class ProfilePage extends React.Component<Props> {
                           phone: values.telefono,
                           mobile: values.celular,
                         };
-                        try {
-                          swal("Lo sentimos", "olo", "error");
-                        } catch (error) {
-                          swal("Lo sentimos", error, "error");
+                        const result = await Auth.updateMe(newUser);
+                        if (result.error) {
+                          swal("Lo sentimos", result.error.toString(), "error");
+                          this.setState({
+                            confirmLoading: false,
+                          });
+                          return;
                         }
+
+                        swal("¡Listo!", `Pefil guardado con éxito`, "success");
                       }}
                       render={({
                         values,
@@ -204,7 +247,7 @@ class ProfilePage extends React.Component<Props> {
                         handleSubmit,
                         isSubmitting,
                       }) => (
-                        <div>
+                        <Form onSubmit={handleSubmit}>
                           <Form.Group>
                             <Form.Label>RUT</Form.Label>
                             <div>{rut}</div>
@@ -288,19 +331,33 @@ class ProfilePage extends React.Component<Props> {
                             </Form.InputGroup>
                           </Form.Group>
                           <Form.Footer>
-                            <Button color="primary" block>
+                            <Button
+                              htmlType="submit"
+                              type="primary"
+                              block
+                              loading={isSubmitting}
+                            >
                               Guardar
                             </Button>
 
                             <Button
                               color="default"
                               block
-                              onClick={this.changePass}
+                              className="mt-2"
+                              onClick={() => {
+                                this.setState({
+                                  visible: true,
+                                  values: {
+                                    contrasenaActual: "",
+                                    contrasenaNueva: "",
+                                  },
+                                });
+                              }}
                             >
                               Cambiar contraseña
                             </Button>
                           </Form.Footer>
-                        </div>
+                        </Form>
                       )}
                     />
                   </Card.Body>
@@ -334,6 +391,40 @@ class ProfilePage extends React.Component<Props> {
                 </Card>
               </Grid.Col>
             </Grid.Row>
+
+            <Modal
+              title="Cambio de contraseña"
+              visible={visible}
+              onOk={this.changePass}
+              confirmLoading={confirmLoading}
+              cancelText="Cancelar"
+              okText="Guardar"
+              onCancel={this.handleCancel}
+            >
+              <Form>
+                <FormTextInput
+                  name="contrasenaActual"
+                  type="password"
+                  label="Contraseña actual"
+                  placeholder="**********"
+                  onChange={this.handleChange}
+                  onBlur={this.handleBlur}
+                  value={values && values.contrasenaActual}
+                  error={errors && errors.contrasenaActual}
+                />
+
+                <FormTextInput
+                  name="contrasenaNueva"
+                  type="password"
+                  label="Nueva contraseña"
+                  placeholder="**********"
+                  onChange={this.handleChange}
+                  onBlur={this.handleBlur}
+                  value={values && values.contrasenaNueva}
+                  error={errors && errors.contrasenaNueva}
+                />
+              </Form>
+            </Modal>
           </Container>
         </div>
       </Layout>

@@ -97,7 +97,7 @@ export default class UsersPage extends Component {
       if (willDelete) {
         const result = await Users.delete(user.id);
         if (result.error) {
-          swal("Error al eliminar usuario", result.error, "error");
+          swal("Error al eliminar usuario", result.error.toString(), "error");
         } else {
           swal("¡Listo!", "Usuario bloqueado con éxito", "success");
         }

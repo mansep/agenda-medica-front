@@ -14,6 +14,12 @@ import UsersPage from "../pages/admin/users";
 import MedicalSpecialityPage from "../pages/admin/medical-speciality";
 import DoctorsPage from "../pages/admin/doctors";
 import MedicalCenterPage from "../pages/admin/medical-center";
+import MedicalBuildingPage from "../pages/admin/medical-building";
+import MedicalOfficePage from "../pages/admin/medical-office";
+import SettingsPage from "../pages/config/settings";
+import AppointmentCreatePage from "../pages/appointment/create";
+import AppointmentMePage from "../pages/appointment/me";
+import AppointmentReservedPage from "../pages/appointment/reserved";
 
 type Props = {
   session: any;
@@ -102,6 +108,49 @@ class Routes extends Component<Props> {
           session={this.props.session}
         >
           <MedicalCenterPage />
+        </PrivateRoute>
+        <PrivateRoute
+          exact
+          path="/agenda/admin/edificios"
+          session={this.props.session}
+        >
+          <MedicalBuildingPage />
+        </PrivateRoute>
+        <PrivateRoute
+          exact
+          path="/agenda/admin/oficinas"
+          session={this.props.session}
+        >
+          <MedicalOfficePage />
+        </PrivateRoute>
+
+        <PrivateRoute
+          exact
+          path="/agenda/configuracion"
+          session={this.props.session}
+        >
+          <SettingsPage />
+        </PrivateRoute>
+        <PrivateRoute
+          exact
+          path="/agenda/reservas/crear"
+          session={this.props.session}
+        >
+          <AppointmentCreatePage />
+        </PrivateRoute>
+        <PrivateRoute
+          exact
+          path="/agenda/reservas/mis-reservas"
+          session={this.props.session}
+        >
+          <AppointmentMePage />
+        </PrivateRoute>
+        <PrivateRoute
+          exact
+          path="/agenda/reservas/reservar"
+          session={this.props.session}
+        >
+          <AppointmentReservedPage />
         </PrivateRoute>
         <Route component={Error404Page} />
       </Switch>

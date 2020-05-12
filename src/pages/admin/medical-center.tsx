@@ -83,7 +83,7 @@ export default class MedicalCenterPage extends Component {
       if (willDelete) {
         const result = await MedicalCenter.delete(esp.id);
         if (result.error) {
-          swal("Error al dehabilitar centro médico", result.error, "error");
+          swal("Error al dehabilitar centro médico", result.error.toString(), "error");
         } else {
           swal(
             "¡Listo!",
@@ -234,7 +234,7 @@ export default class MedicalCenterPage extends Component {
     const data = especialidades.data.map((item) => {
       item.estado = item.status === "ACTIVE" ? "Activa" : "Deshabilitado";
       item.option = (
-        <Form.InputGroup append>
+        <Form.InputGroup append key={String(item.id)}>
           <Button onClick={() => this.edit(item)}>
             <Icon prefix="fe" name="edit-2" />
           </Button>

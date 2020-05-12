@@ -47,7 +47,7 @@ class LoginPage extends React.Component<Props> {
               this.props.history.push("/agenda");
             } else {
               setSubmitting(false);
-              swal("Lo sentimos", result.error, "error");
+              swal("Lo sentimos", result.error.toString(), "error");
             }
           } catch (error) {
             setSubmitting(false);
