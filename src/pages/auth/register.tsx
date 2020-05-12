@@ -105,6 +105,14 @@ class RegisterPage extends React.Component<Props> {
           values,
           { setSubmitting, setErrors /* setValues and other goodies */ }
         ) => {
+          values.rut = values.rut
+            .split(".")
+            .join("")
+            .split("-")
+            .join("")
+            .split(" ")
+            .join()
+            .toUpperCase();
           const newUser: UserDto = {
             rut: values.rut,
             name: values.nombre,
@@ -167,7 +175,7 @@ class RegisterPage extends React.Component<Props> {
                 placeholder="12.345.678-9"
                 onChange={handleChange}
                 onBlur={handleBlur}
-                value={values && values.rut}
+                value={values && ValidateRut.runFormat(values.rut)}
                 error={errors && errors.rut}
               />
               <FormTextInput

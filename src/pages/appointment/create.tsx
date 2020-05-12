@@ -425,6 +425,14 @@ class AppointmentCreatePage extends Component<Props, State> {
                       <Form.Group label="Fecha">
                         <DatePicker
                           format="DD-MM-YYYY"
+                          disabledDate={(d) =>
+                            !d ||
+                            d.isAfter(
+                              moment().add(1, "month").format("YYYY-MM-DD")
+                            ) ||
+                            d.isSameOrBefore(moment().format("YYYY-MM-DD"))
+                          }
+                          defaultPickerValue={moment()}
                           value={fecha}
                           onChange={(value) => {
                             this.setState({ fecha: value });
