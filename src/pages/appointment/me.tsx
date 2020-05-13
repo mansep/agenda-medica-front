@@ -10,12 +10,14 @@ moment.locale("es-us");
 export default class AppointmentMePage extends Component {
   render() {
     return (
-      <Layout title="Mis reservas médica">
+      <Layout title="Reservas">
         <Container>
           <Grid.Row>
             <Grid.Col lg={12}>
               <Card>
-                <Card.Header></Card.Header>
+                <Card.Header>
+                  <Card.Title>Mis Reservas</Card.Title>
+                </Card.Header>
                 <Card.Body>
                   <Calendar />
                 </Card.Body>

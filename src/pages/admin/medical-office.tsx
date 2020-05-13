@@ -8,7 +8,7 @@ import { MedicalBuildingDto } from "../../api/dto/medical-building.dto";
 import { MedicalBuilding } from "../../api/admin/medical-building";
 import { MedicalOfficeDto } from "../../api/dto/medical-office.dto";
 import { MedicalOffice } from "../../api/admin/medical-office";
-import { Modal, Button } from "antd";
+import { Modal, Button, Select } from "antd";
 import * as Validator from "class-validator";
 import { ResponseDto } from "../../api/dto/response.dto";
 import { MedicalCenter } from "../../api/admin/medical-center";
@@ -77,7 +77,11 @@ export default class MedicalBuildingPage extends Component {
       if (willDelete) {
         const result = await MedicalOffice.delete(oficina.id);
         if (result.error) {
-          swal("Error al dehabilitar oficina", result.error.toString(), "error");
+          swal(
+            "Error al dehabilitar oficina",
+            result.error.toString(),
+            "error"
+          );
         } else {
           swal("¡Listo!", "Oficina deshabilitado con éxito", "success").then(
             () => {
@@ -219,7 +223,9 @@ export default class MedicalBuildingPage extends Component {
     const { centroMedico } = this.state;
     if (isNaN(Number(centroMedico))) return;
     this.setState({ isLoading: true });
-    const edificios = await MedicalBuilding.getByMedicalCenter(Number(centroMedico));
+    const edificios = await MedicalBuilding.getByMedicalCenter(
+      Number(centroMedico)
+    );
     if (edificios.error) {
       this.setState({ isLoading: false });
       swal("Lo sentimos", edificios.error, "error");
@@ -232,9 +238,7 @@ export default class MedicalBuildingPage extends Component {
     const { edificio } = this.state;
     if (isNaN(Number(edificio))) return;
     this.setState({ isLoading: true });
-    const centro = await MedicalOffice.getByMedicalBuilding(
-      Number(edificio)
-    );
+    const centro = await MedicalOffice.getByMedicalBuilding(Number(edificio));
     if (centro.error) {
       this.setState({ isLoading: false });
       swal("Lo sentimos", centro.error, "error");
@@ -281,7 +285,6 @@ export default class MedicalBuildingPage extends Component {
       );
     });
 
-
     const optionsBuildings = buildings.map((item: any) => {
       return (
         <option key={String(item.id)} value={String(item.id)}>
@@ -308,32 +311,66 @@ export default class MedicalBuildingPage extends Component {
                 </Card.Header>
                 <Card.Body>
                   <Form.Group label="Centro Médico">
-                    <Form.Select
-                      name="centroMedicoLista"
-                      onChange={(evt) => {
+                    <Select
+                      showSearch
+                      placeholder="Seleccione centro médico"
+                      optionFilterProp="children"
+                      style={{ width: "100%" }}
+                      onChange={(value) => {
                         this.setState(
-                          { centroMedico: evt.target.value },
+                          { centroMedico: value },
                           this.loadingEdificios
                         );
                       }}
+                      filterOption={(input, option) => {
+                        if (option !== undefined) {
+                          if (
+                            option.children !== undefined &&
+                            option.children !== null
+                          ) {
+                            return (
+                              option.children
+                                .toLowerCase()
+                                .indexOf(input.toLowerCase()) >= 0
+                            );
+                          }
+                        }
+                        return false;
+                      }}
                     >
-                      <option>Seleccione</option>
                       {options}
-                    </Form.Select>
+                    </Select>
                   </Form.Group>
                   <Form.Group label="Edificio">
-                    <Form.Select
-                      name="edificioLista"
-                      onChange={(evt) => {
+                    <Select
+                      showSearch
+                      placeholder="Seleccione centro médico"
+                      optionFilterProp="children"
+                      style={{ width: "100%" }}
+                      onChange={(value) => {
                         this.setState(
-                          { edificio: evt.target.value },
+                          { edificio: value },
                           this.loadingOficinas
                         );
                       }}
+                      filterOption={(input, option) => {
+                        if (option !== undefined) {
+                          if (
+                            option.children !== undefined &&
+                            option.children !== null
+                          ) {
+                            return (
+                              option.children
+                                .toLowerCase()
+                                .indexOf(input.toLowerCase()) >= 0
+                            );
+                          }
+                        }
+                        return false;
+                      }}
                     >
-                      <option>Seleccione</option>
                       {optionsBuildings}
-                    </Form.Select>
+                    </Select>
                   </Form.Group>
                   {isLoading ? (
                     <div className="d-flex justify-content-center">

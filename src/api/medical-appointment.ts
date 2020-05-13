@@ -22,6 +22,10 @@ export class MedicalAppointment {
         return await request.post('/medical-appointment/bulk/', esp);
     }
 
+    static async getAvailabilityList(specialityId: number, centerId: number) {
+        return await request.get(`/medical-appointment/availability/${specialityId}/${centerId}`);
+    }
+    
     static async getAvailability(esp: MedicalAppointmentAvailabilityDto[]) {
         return await request.post('/medical-appointment/availability/', esp);
     }

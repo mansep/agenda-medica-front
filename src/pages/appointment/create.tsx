@@ -9,7 +9,7 @@ import { Users } from "../../api/admin/users";
 import swal from "sweetalert";
 import { MedicalSpecialityDto } from "../../api/dto/medical-speciality.dto";
 import { MedicalCenterDto } from "../../api/dto/medical-center.dto";
-import { Button, DatePicker, TimePicker, Timeline } from "antd";
+import { Button, DatePicker, TimePicker, Timeline, Select } from "antd";
 import { MedicalAppointmentAvailabilityDto } from "../../api/dto/medical-appointment-availability.dto";
 import { MedicalBuildingDto } from "../../api/dto/medical-building.dto";
 import { MedicalOfficeDto } from "../../api/dto/medical-office.dto";
@@ -185,11 +185,16 @@ class AppointmentCreatePage extends Component<Props, State> {
   };
 
   create = async () => {
-    const { disponibilidades } = this.state;
+    const { disponibilidades, especialidad } = this.state;
     if (disponibilidades === undefined || disponibilidades === null) {
       swal("Compruebe", "Debe buscar disponibilidad", "warning");
       return;
     }
+    if (especialidad === undefined || especialidad === null) {
+      swal("Compruebe", "Debe seleccionar especialidad médica", "warning");
+      return;
+    }
+
     this.setState({ isSaving: true });
 
     const appoiments: MedicalAppointmentDto[] = [];
@@ -198,6 +203,9 @@ class AppointmentCreatePage extends Component<Props, State> {
       if (appoiment.availability) {
         appoiments.push({
           userDoctor: appoiment.userDoctor,
+          medicalSpeciality: {
+            id: Number(especialidad),
+          } as MedicalSpecialityDto,
           schedule: appoiment.schedule,
           medicalOffice: appoiment.medicalOffice,
         });
@@ -330,21 +338,26 @@ class AppointmentCreatePage extends Component<Props, State> {
     }
 
     return (
-      <Layout title="Crear hora médica">
+      <Layout title="Reservas">
         <Container>
           <Grid.Row>
             <Grid.Col lg={12}>
               <Card>
-                <Card.Header></Card.Header>
+                <Card.Header>
+                  <Card.Title>Crear hora médica</Card.Title>
+                </Card.Header>
                 <Card.Body>
                   <Grid.Row>
                     <Grid.Col lg={6}>
                       {!isDoctor ? (
                         <Form.Group label="Doctor">
-                          <Form.Select
-                            name="doctores"
-                            onChange={(evt) => {
-                              const userId = Number(evt.target.value);
+                          <Select
+                            showSearch
+                            placeholder="Seleccione doctor"
+                            optionFilterProp="children"
+                            style={{ width: "100%" }}
+                            onChange={(value) => {
+                              const userId = Number(value);
                               for (const doctor of this.state.doctors) {
                                 if (userId === doctor.id) {
                                   this.setState({ doctor });
@@ -352,71 +365,153 @@ class AppointmentCreatePage extends Component<Props, State> {
                                 }
                               }
                             }}
+                            filterOption={(input, option) => {
+                              if (option !== undefined) {
+                                if (
+                                  option.children !== undefined &&
+                                  option.children !== null
+                                ) {
+                                  return (
+                                    option.children
+                                      .toLowerCase()
+                                      .indexOf(input.toLowerCase()) >= 0
+                                  );
+                                }
+                              }
+                              return false;
+                            }}
                           >
-                            <option>Seleccione</option>
                             {options}
-                          </Form.Select>
+                          </Select>
                         </Form.Group>
                       ) : null}
                     </Grid.Col>
                     <Grid.Col lg={6}>
                       <Form.Group label="Especialidad médica">
-                        <Form.Select
-                          name="especialidad"
-                          onChange={(evt) => {
-                            this.setState({ especialidad: evt.target.value });
+                        <Select
+                          showSearch
+                          placeholder="Seleccione especialidad médica"
+                          optionFilterProp="children"
+                          style={{ width: "100%" }}
+                          onChange={(value) => {
+                            this.setState({ especialidad: value as any });
+                          }}
+                          filterOption={(input, option) => {
+                            if (option !== undefined) {
+                              if (
+                                option.children !== undefined &&
+                                option.children !== null
+                              ) {
+                                return (
+                                  option.children
+                                    .toLowerCase()
+                                    .indexOf(input.toLowerCase()) >= 0
+                                );
+                              }
+                            }
+                            return false;
                           }}
                         >
-                          <option>Seleccione</option>
                           {especialidades}
-                        </Form.Select>
+                        </Select>
                       </Form.Group>
                     </Grid.Col>
                   </Grid.Row>
                   <Grid.Row>
                     <Grid.Col lg={4}>
                       <Form.Group label="Centro médico">
-                        <Form.Select
-                          name="centroMedico"
-                          onChange={(evt) => {
+                        <Select
+                          showSearch
+                          placeholder="Seleccione centro médico"
+                          optionFilterProp="children"
+                          style={{ width: "100%" }}
+                          onChange={(value) => {
                             this.setState(
-                              { centro: evt.target.value },
+                              { centro: value as any },
                               this.loadEdificios
                             );
                           }}
+                          filterOption={(input, option) => {
+                            if (option !== undefined) {
+                              if (
+                                option.children !== undefined &&
+                                option.children !== null
+                              ) {
+                                return (
+                                  option.children
+                                    .toLowerCase()
+                                    .indexOf(input.toLowerCase()) >= 0
+                                );
+                              }
+                            }
+                            return false;
+                          }}
                         >
-                          <option>Seleccione</option>
                           {centros}
-                        </Form.Select>
+                        </Select>
                       </Form.Group>
                     </Grid.Col>
                     <Grid.Col lg={4}>
                       <Form.Group label="Edificio">
-                        <Form.Select
-                          name="edificio"
-                          onChange={(evt) => {
+                        <Select
+                          showSearch
+                          placeholder="Seleccione edificio"
+                          optionFilterProp="children"
+                          style={{ width: "100%" }}
+                          onChange={(value) => {
                             this.setState(
-                              { edificio: evt.target.value },
+                              { edificio: value as any },
                               this.loadOficinas
                             );
                           }}
+                          filterOption={(input, option) => {
+                            if (option !== undefined) {
+                              if (
+                                option.children !== undefined &&
+                                option.children !== null
+                              ) {
+                                return (
+                                  option.children
+                                    .toLowerCase()
+                                    .indexOf(input.toLowerCase()) >= 0
+                                );
+                              }
+                            }
+                            return false;
+                          }}
                         >
-                          <option>Seleccione</option>
                           {optionsEdificios}
-                        </Form.Select>
+                        </Select>
                       </Form.Group>
                     </Grid.Col>
                     <Grid.Col lg={4}>
                       <Form.Group label="Oficina">
-                        <Form.Select
-                          name="oficina"
-                          onChange={(evt) => {
-                            this.setState({ oficina: evt.target.value });
+                        <Select
+                          showSearch
+                          placeholder="Seleccione edificio"
+                          optionFilterProp="children"
+                          style={{ width: "100%" }}
+                          onChange={(value) => {
+                            this.setState({ oficina: value as any });
+                          }}
+                          filterOption={(input, option) => {
+                            if (option !== undefined) {
+                              if (
+                                option.children !== undefined &&
+                                option.children !== null
+                              ) {
+                                return (
+                                  option.children
+                                    .toLowerCase()
+                                    .indexOf(input.toLowerCase()) >= 0
+                                );
+                              }
+                            }
+                            return false;
                           }}
                         >
-                          <option>Seleccione</option>
                           {optionsOficinas}
-                        </Form.Select>
+                        </Select>
                       </Form.Group>
                     </Grid.Col>
                   </Grid.Row>

@@ -1,4 +1,3 @@
-
 import React, { Component } from "react";
 import { Container, Grid, Card, FormTextInput, Form, Icon } from "tabler-react";
 import ReactLoading from "react-loading";
@@ -7,7 +6,7 @@ import Layout from "../../containers/layout";
 import Table from "../../components/admin/medical-building.table";
 import { MedicalBuildingDto } from "../../api/dto/medical-building.dto";
 import { MedicalBuilding } from "../../api/admin/medical-building";
-import { Modal, Button } from "antd";
+import { Modal, Button, Select } from "antd";
 import * as Validator from "class-validator";
 import { ResponseDto } from "../../api/dto/response.dto";
 import { MedicalCenterDto } from "../../api/dto/medical-center.dto";
@@ -76,7 +75,11 @@ export default class MedicalBuildingPage extends Component {
       if (willDelete) {
         const result = await MedicalBuilding.delete(edificio.id);
         if (result.error) {
-          swal("Error al dehabilitar edificio", result.error.toString(), "error");
+          swal(
+            "Error al dehabilitar edificio",
+            result.error.toString(),
+            "error"
+          );
         } else {
           swal("¡Listo!", "Edificio deshabilitado con éxito", "success").then(
             () => {
@@ -246,7 +249,11 @@ export default class MedicalBuildingPage extends Component {
     } = this.state;
 
     const options = centers.map((item: any) => {
-      return <option key={String(item.id)} value={String(item.id)}>{item.name}</option>;
+      return (
+        <option key={String(item.id)} value={String(item.id)}>
+          {item.name}
+        </option>
+      );
     });
     return (
       <Layout title="Administracion de edificios">
@@ -267,18 +274,35 @@ export default class MedicalBuildingPage extends Component {
                 </Card.Header>
                 <Card.Body>
                   <Form.Group label="Centro Médico">
-                    <Form.Select
-                      name="centroMedicoLista"
-                      onChange={(evt) => {
+                    <Select
+                      showSearch
+                      placeholder="Seleccione centro médico"
+                      optionFilterProp="children"
+                      style={{ width: "100%" }}
+                      onChange={(value) => {
                         this.setState(
-                          { centroMedico: evt.target.value },
+                          { centroMedico: value as any },
                           this.loadingEdificios
                         );
                       }}
+                      filterOption={(input, option) => {
+                        if (option !== undefined) {
+                          if (
+                            option.children !== undefined &&
+                            option.children !== null
+                          ) {
+                            return (
+                              option.children
+                                .toLowerCase()
+                                .indexOf(input.toLowerCase()) >= 0
+                            );
+                          }
+                        }
+                        return false;
+                      }}
                     >
-                      <option>Seleccione</option>
                       {options}
-                    </Form.Select>
+                    </Select>
                   </Form.Group>
                   {isLoading ? (
                     <div className="d-flex justify-content-center">
