@@ -256,12 +256,13 @@ export default class MedicalBuildingPage extends Component {
       );
     });
     return (
-      <Layout title="Administracion de edificios">
+      <Layout title="Administración">
         <Container>
           <Grid.Row>
             <Grid.Col lg={12}>
               <Card>
                 <Card.Header>
+                  <Card.Title>Edificios</Card.Title>
                   {centroMedico ? (
                     <Button
                       type="primary"
@@ -306,7 +307,7 @@ export default class MedicalBuildingPage extends Component {
                   </Form.Group>
                   {isLoading ? (
                     <div className="d-flex justify-content-center">
-                      <ReactLoading type="bubbles" color="#316CBE" />
+                      <ReactLoading type="bubbles" color="#1890ff" />
                     </div>
                   ) : (
                     <div>{centroMedico ? <Table data={data} /> : null}</div>

@@ -81,16 +81,18 @@ export default class DoctorsPage extends Component {
     const { isLoading, data, medicalCenters, medicalSpecialities } = this.state;
 
     return (
-      <Layout title="Administracion de doctores">
+      <Layout title="Administración">
         <Container>
           <Grid.Row>
             <Grid.Col lg={12}>
               <Card>
-                <Card.Header></Card.Header>
+                <Card.Header>
+                  <Card.Title>Doctores</Card.Title>
+                </Card.Header>
                 <Card.Body>
                   {isLoading ? (
                     <div className="d-flex justify-content-center">
-                      <ReactLoading type="bubbles" color="#316CBE" />
+                      <ReactLoading type="bubbles" color="#1890ff" />
                     </div>
                   ) : (
                     <Table

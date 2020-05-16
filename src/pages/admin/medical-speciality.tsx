@@ -226,12 +226,13 @@ export default class MedicalSpecialityPage extends Component {
     } = this.state;
 
     return (
-      <Layout title="Administracion de especialidades médicas">
+      <Layout title="Administración">
         <Container>
           <Grid.Row>
             <Grid.Col lg={12}>
               <Card>
                 <Card.Header>
+                  <Card.Title>Especialidades Médicas</Card.Title>
                   <Button
                     type="primary"
                     className="float-right margin-left-auto"
@@ -243,7 +244,7 @@ export default class MedicalSpecialityPage extends Component {
                 <Card.Body>
                   {isLoading ? (
                     <div className="d-flex justify-content-center">
-                      <ReactLoading type="bubbles" color="#316CBE" />
+                      <ReactLoading type="bubbles" color="#1890ff" />
                     </div>
                   ) : (
                     <Table data={data} />

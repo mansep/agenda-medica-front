@@ -1,12 +1,5 @@
 import React, { Component } from "react";
-import {
-  Container,
-  Grid,
-  Card,
-  FormTextInput,
-  Form,
-  Icon,
-} from "tabler-react";
+import { Container, Grid, Card, FormTextInput, Form, Icon } from "tabler-react";
 import ReactLoading from "react-loading";
 import swal from "sweetalert";
 import Layout from "../../containers/layout";
@@ -324,12 +317,13 @@ export default class UsersPage extends Component {
     } = this.state;
 
     return (
-      <Layout title="Administracion de usuarios">
+      <Layout title="Administración">
         <Container>
           <Grid.Row>
             <Grid.Col lg={12}>
               <Card>
                 <Card.Header>
+                  <Card.Title>Usuarios</Card.Title>
                   <Button
                     type="primary"
                     className="float-right margin-left-auto"
@@ -341,7 +335,7 @@ export default class UsersPage extends Component {
                 <Card.Body>
                   {isLoading ? (
                     <div className="d-flex justify-content-center">
-                      <ReactLoading type="bubbles" color="#316CBE" />
+                      <ReactLoading type="bubbles" color="#1890ff" />
                     </div>
                   ) : (
                     <Table data={data} />
