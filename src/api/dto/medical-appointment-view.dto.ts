@@ -1,5 +1,7 @@
 export interface MedicalAppointmentViewDto {
     id: number;
+    reservedId: number;
+    reservedStatus: string;
     doctorRut: string;
     doctorId: number;
     doctorName: string;
@@ -21,4 +23,9 @@ export interface MedicalAppointmentViewDto {
     centerAddress: string;
     centerEmail: string;
     centerPhone: string;
+    patientId: number;
+    patientRut: string;
+    patientName: string;
+    patientLastName: string;
+    patientEmail: string;
 }

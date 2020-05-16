@@ -13,12 +13,23 @@ export class MedicalAppointmentReserved {
         return await request.get(`/medical-appointment-reserved/${id}`);
     }
 
+    static async getMe() {
+        return await request.get('/medical-appointment-reserved/me/');
+    }
+
     static async create(esp: MedicalAppointmentReservedDto) {
         return await request.post('/medical-appointment-reserved/', esp);
     }
 
     static async update(esp: MedicalAppointmentReservedDto, id?: number) {
         return await request.put(`/medical-appointment-reserved/${id}`, esp);
+    }
+
+    static async updateStatus(id: number, status: string) {
+        const statusDto = {
+            status,
+        }
+        return await request.put(`/medical-appointment-reserved/status/${id}`, statusDto);
     }
 
     static async delete(id?: number) {
