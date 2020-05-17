@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 
 import { Container, Grid, Card } from "tabler-react";
+import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
 import { UnorderedListOutlined, CalendarOutlined } from "@ant-design/icons";
 import {
   Calendar,
@@ -14,10 +16,10 @@ import {
   Table,
   Alert,
 } from "antd";
-import { MedicalAppointmentViewDto } from "../../api/dto/medical-appointment-view.dto";
-import { MedicalAppointmentReserved } from "../../api/medical-appointment-reserved";
+import { MedicalAppointmentViewDto } from "../../../api/dto/medical-appointment-view.dto";
+import { MedicalAppointmentReserved } from "../../../api/medical-appointment-reserved";
 
-import Layout from "../../containers/layout";
+import Layout from "../../../containers/layout";
 import moment, { Moment } from "moment";
 import "moment/locale/es-us";
 import swal from "sweetalert";
@@ -25,11 +27,15 @@ moment.locale("es-us");
 
 const { TabPane } = Tabs;
 
-export default class AppointmentMePage extends Component {
+type Props = {
+  session?: any;
+};
+
+class AppointmentMePage extends Component<Props> {
   state = {
     dialog: null,
     isLoading: true,
-    isDoctor: false,
+    isDoctor: this.props.session.userDto.role === "DOCTOR",
     data: [] as MedicalAppointmentViewDto[],
     dataCurrent: [] as MedicalAppointmentViewDto[],
     dataOld: [] as MedicalAppointmentViewDto[],
@@ -113,11 +119,14 @@ export default class AppointmentMePage extends Component {
       buttons: ["Cancelar", true],
       dangerMode: true,
     }).then(async (willCreate) => {
+      this.setState({ isLoading: true });
       if (willCreate) {
         const result = await MedicalAppointmentReserved.updateStatus(
           reserva.reservedId,
           "CONFIRMED"
         );
+
+        this.setState({ isLoading: false });
         if (result.error) {
           swal(
             "Error al confirmar asistencia",
@@ -147,11 +156,13 @@ export default class AppointmentMePage extends Component {
       buttons: ["Cancelar", true],
       dangerMode: true,
     }).then(async (willCreate) => {
+      this.setState({ isLoading: true });
       if (willCreate) {
         const result = await MedicalAppointmentReserved.updateStatus(
           reserva.reservedId,
           "CANCELED"
         );
+        this.setState({ isLoading: false });
         if (result.error) {
           swal(
             "Error al confirmar asistencia",
@@ -181,10 +192,11 @@ export default class AppointmentMePage extends Component {
     const dataOld: any = [];
     const dataCalendarMonth: any = [];
     const dataCalendar: any = [];
+    const now = new Date();
+
     for (const list of dataResponse) {
       const month = Number(moment(list.schedule).format("YYYYMM"));
       const day = Number(moment(list.schedule).format("YYYYMMDD"));
-      const now = new Date();
       if (dataCalendarMonth[month] === undefined) {
         dataCalendarMonth[month] = [];
       }
@@ -200,7 +212,7 @@ export default class AppointmentMePage extends Component {
       row.patientFullName = `${list.patientName} ${list.patientLastName}`;
       data.push(row);
 
-      if (list.schedule > now) {
+      if (moment(list.schedule).toDate() > now) {
         dataCurrent.push(row);
       } else {
         dataOld.push(row);
@@ -217,7 +229,52 @@ export default class AppointmentMePage extends Component {
     });
   };
 
-  componentDidMount() {
+  async componentDidMount() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("confirmar")) {
+      const result = await MedicalAppointmentReserved.getMeById(
+        Number(params.get("confirmar"))
+      );
+      if (result.error) {
+        this.setState({ isLoading: false });
+        swal("Lo sentimos", result.error.toString(), "error");
+        return;
+      }
+      const reserva = result.data as MedicalAppointmentViewDto;
+      if (reserva.reservedStatus === "ACTIVE") {
+        this.confirmar(reserva);
+      } else {
+        swal(
+          "Lo sentimos",
+          `La reserva ya se encuentra ${
+            reserva.reservedStatus === "CONFIRMED" ? "confirmada" : "cancelada"
+          } `,
+          "warning"
+        );
+      }
+    } else if (params.has("cancelar")) {
+      const result = await MedicalAppointmentReserved.getMeById(
+        Number(params.get("cancelar"))
+      );
+      const reserva = result.data as MedicalAppointmentViewDto;
+      if (result.error) {
+        this.setState({ isLoading: false });
+        swal("Lo sentimos", result.error.toString(), "error");
+        return;
+      }
+      if (reserva.reservedStatus === "ACTIVE") {
+        this.cancelar(reserva);
+      } else {
+        swal(
+          "Lo sentimos",
+          `La reserva ya se encuentra ${
+            reserva.reservedStatus === "CONFIRMED" ? "confirmada" : "cancelada"
+          } `,
+          "warning"
+        );
+      }
+    }
+
     this.loadReservas();
   }
 
@@ -375,11 +432,11 @@ export default class AppointmentMePage extends Component {
                                     avatar={
                                       !isDoctor ? (
                                         <Avatar
-                                          src={require("../../assets/icons/user-doctor.svg")}
+                                          src={require("../../../assets/icons/user-doctor.svg")}
                                         />
                                       ) : (
                                         <Avatar
-                                          src={require("../../assets/icons/user-patient.svg")}
+                                          src={require("../../../assets/icons/user-patient.svg")}
                                         />
                                       )
                                     }
@@ -400,6 +457,15 @@ export default class AppointmentMePage extends Component {
                                     }
                                     description={
                                       <>
+                                        {!isDoctor ? (
+                                          <>
+                                            <b>
+                                              Precio bono: $
+                                              {item.specialityPrice}
+                                            </b>
+                                            <br />
+                                          </>
+                                        ) : null}
                                         <b>
                                           Especialidad: {item.specialityName}
                                         </b>
@@ -407,9 +473,11 @@ export default class AppointmentMePage extends Component {
                                         Centro médico: {item.centerName} (
                                         {item.centerAddress})
                                         <br />
-                                        Edificio: {item.buildingName}, piso{" "}
-                                        {item.officeFloor}, oficina{" "}
-                                        {item.officeName}
+                                        <i>
+                                          Edificio: {item.buildingName}, piso{" "}
+                                          {item.officeFloor}, oficina{" "}
+                                          {item.officeName}
+                                        </i>
                                         <br />
                                       </>
                                     }
@@ -477,11 +545,11 @@ export default class AppointmentMePage extends Component {
                                     avatar={
                                       !isDoctor ? (
                                         <Avatar
-                                          src={require("../../assets/icons/user-doctor.svg")}
+                                          src={require("../../../assets/icons/user-doctor.svg")}
                                         />
                                       ) : (
                                         <Avatar
-                                          src={require("../../assets/icons/user-patient.svg")}
+                                          src={require("../../../assets/icons/user-patient.svg")}
                                         />
                                       )
                                     }
@@ -502,6 +570,15 @@ export default class AppointmentMePage extends Component {
                                     }
                                     description={
                                       <>
+                                        {!isDoctor ? (
+                                          <>
+                                            <b>
+                                              Precio bono: $
+                                              {item.specialityPrice}
+                                            </b>
+                                            <br />
+                                          </>
+                                        ) : null}
                                         <b>
                                           Especialidad: {item.specialityName}
                                         </b>
@@ -509,9 +586,11 @@ export default class AppointmentMePage extends Component {
                                         Centro médico: {item.centerName} (
                                         {item.centerAddress})
                                         <br />
-                                        Edificio: {item.buildingName}, piso{" "}
-                                        {item.officeFloor}, oficina{" "}
-                                        {item.officeName}
+                                        <i>
+                                          Edificio: {item.buildingName}, piso{" "}
+                                          {item.officeFloor}, oficina{" "}
+                                          {item.officeName}
+                                        </i>
                                         <br />
                                       </>
                                     }
@@ -572,11 +651,17 @@ export default class AppointmentMePage extends Component {
           <Table
             dataSource={dialog !== null ? (dialog as any) : []}
             columns={columns}
-            scroll={{ x: 800 }}
+            scroll={{ x: 900 }}
           />
-          ;
         </Modal>
       </Layout>
     );
   }
 }
+
+const mapStateToProps = (state: any) => {
+  const { reducers } = state;
+  return { session: reducers.session };
+};
+
+export default withRouter(connect(mapStateToProps)(AppointmentMePage));

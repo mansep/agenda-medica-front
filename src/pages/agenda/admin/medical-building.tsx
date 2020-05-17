@@ -2,15 +2,15 @@ import React, { Component } from "react";
 import { Container, Grid, Card, FormTextInput, Form, Icon } from "tabler-react";
 import ReactLoading from "react-loading";
 import swal from "sweetalert";
-import Layout from "../../containers/layout";
-import Table from "../../components/admin/medical-building.table";
-import { MedicalBuildingDto } from "../../api/dto/medical-building.dto";
-import { MedicalBuilding } from "../../api/admin/medical-building";
+import Layout from "../../../containers/layout";
+import Table from "../../../components/admin/medical-building.table";
+import { MedicalBuildingDto } from "../../../api/dto/medical-building.dto";
+import { MedicalBuilding } from "../../../api/admin/medical-building";
 import { Modal, Button, Select } from "antd";
 import * as Validator from "class-validator";
-import { ResponseDto } from "../../api/dto/response.dto";
-import { MedicalCenterDto } from "../../api/dto/medical-center.dto";
-import { MedicalCenter } from "../../api/admin/medical-center";
+import { ResponseDto } from "../../../api/dto/response.dto";
+import { MedicalCenterDto } from "../../../api/dto/medical-center.dto";
+import { MedicalCenter } from "../../../api/admin/medical-center";
 
 export default class MedicalBuildingPage extends Component {
   state = {

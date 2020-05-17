@@ -2,13 +2,13 @@ import React, { Component } from "react";
 import { Container, Grid, Card } from "tabler-react";
 import ReactLoading from "react-loading";
 import swal from "sweetalert";
-import Layout from "../../containers/layout";
-import Table from "../../components/admin/doctors.table";
-import { UserMedicalSpecialityDto } from "../../api/dto/user-medical-speciality.dto";
-import { Users } from "../../api/admin/users";
-import { ValidateRut } from "../../api/validate";
-import { MedicalSpeciality } from "../../api/admin/medical-speciality";
-import { MedicalCenter } from "../../api/admin/medical-center";
+import Layout from "../../../containers/layout";
+import Table from "../../../components/admin/doctors.table";
+import { UserMedicalSpecialityDto } from "../../../api/dto/user-medical-speciality.dto";
+import { Users } from "../../../api/admin/users";
+import { ValidateRut } from "../../../api/validate";
+import { MedicalSpeciality } from "../../../api/admin/medical-speciality";
+import { MedicalCenter } from "../../../api/admin/medical-center";
 
 export default class DoctorsPage extends Component {
   state = {

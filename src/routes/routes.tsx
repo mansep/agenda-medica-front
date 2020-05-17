@@ -4,22 +4,27 @@ import { connect } from "react-redux";
 
 import { Route, Switch, Redirect, withRouter } from "react-router-dom";
 
-import HomePage from "../pages/home";
-import ProfilePage from "../pages/profile";
-import Error404Page from "../pages/error/404";
-import LoginPage from "../pages/auth/login";
-import LogoutPage from "../pages/auth/logout";
-import RegisterPage from "../pages/auth/register";
-import UsersPage from "../pages/admin/users";
-import MedicalSpecialityPage from "../pages/admin/medical-speciality";
-import DoctorsPage from "../pages/admin/doctors";
-import MedicalCenterPage from "../pages/admin/medical-center";
-import MedicalBuildingPage from "../pages/admin/medical-building";
-import MedicalOfficePage from "../pages/admin/medical-office";
-import SettingsPage from "../pages/config/settings";
-import AppointmentCreatePage from "../pages/appointment/create";
-import AppointmentMePage from "../pages/appointment/me";
-import AppointmentReservedPage from "../pages/appointment/reserved";
+import HomePageWeb from "../pages/web/home";
+import CenterPageWeb from "../pages/web/center";
+import AboutPageWeb from "../pages/web/about";
+import SpecialityPageWeb from "../pages/web/speciality";
+import HomePage from "../pages/agenda/home";
+import ProfilePage from "../pages/agenda/profile";
+import Error404Page from "../pages/agenda/error/404";
+import LoginPage from "../pages/agenda/auth/login";
+import LogoutPage from "../pages/agenda/auth/logout";
+import RePassPage from "../pages/agenda/auth/repass";
+import RegisterPage from "../pages/agenda/auth/register";
+import UsersPage from "../pages/agenda/admin/users";
+import MedicalSpecialityPage from "../pages/agenda/admin/medical-speciality";
+import DoctorsPage from "../pages/agenda/admin/doctors";
+import MedicalCenterPage from "../pages/agenda/admin/medical-center";
+import MedicalBuildingPage from "../pages/agenda/admin/medical-building";
+import MedicalOfficePage from "../pages/agenda/admin/medical-office";
+import SettingsPage from "../pages/agenda/config/settings";
+import AppointmentCreatePage from "../pages/agenda/appointment/create";
+import AppointmentMePage from "../pages/agenda/appointment/me";
+import AppointmentReservedPage from "../pages/agenda/appointment/reserved";
 
 type Props = {
   session: any;
@@ -49,6 +54,13 @@ class Routes extends Component<Props> {
   };
 
   PrivateRoute = ({ children, ...rest }) => {
+    if (!this.isLogged()) {
+      let path = window.location.pathname;
+      if (window.location.search) {
+        path = path + window.location.search;
+      }
+      localStorage.setItem("last_path", path);
+    }
     return (
       <Route
         {...rest}
@@ -74,6 +86,7 @@ class Routes extends Component<Props> {
       <Switch>
         <Route exact path="/login" component={LoginPage} />
         <Route exact path="/logout" component={LogoutPage} />
+        <Route exact path="/recuperar-contrasena" component={RePassPage} />
         <Route exact path="/register" component={RegisterPage} />
         <PrivateRoute exact path="/agenda" session={this.props.session}>
           <HomePage />
@@ -152,6 +165,10 @@ class Routes extends Component<Props> {
         >
           <AppointmentReservedPage />
         </PrivateRoute>
+        <Route exact path="/centros-medicos" component={CenterPageWeb} />
+        <Route exact path="/especialidades" component={SpecialityPageWeb} />
+        <Route exact path="/nosotros" component={AboutPageWeb} />
+        <Route exact path="/" component={HomePageWeb} />
         <Route component={Error404Page} />
       </Switch>
     );

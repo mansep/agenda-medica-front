@@ -6,17 +6,18 @@ import {
   FormTextInput,
   Form,
 } from "tabler-react";
-import logo from "../../assets/logo.png";
-import { ValidateRut } from "../../api/validate";
+import logo from "../../../assets/logo.png";
+import { ValidateRut } from "../../../api/validate";
 import * as Validator from "class-validator";
-import { UserDto } from "../../api/dto/user.dto";
+import { UserDto } from "../../../api/dto/user.dto";
 import moment from "moment";
 import swal from "sweetalert";
-import { Auth } from "../../api/auth";
+import { Auth } from "../../../api/auth";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { setSession } from "../../redux/action";
+import { setSession } from "../../../redux/action";
+import { Button } from "antd";
 
 type Props = {
   setSession: any;
@@ -128,7 +129,13 @@ class RegisterPage extends React.Component<Props> {
             if (!result.error) {
               this.props.setSession(result.data);
               localStorage.setItem("session", JSON.stringify(result.data));
-              this.props.history.push("/agenda");
+              const lastPath = localStorage.getItem("last_path");
+              if (lastPath !== null) {
+                localStorage.removeItem("last_path");
+                this.props.history.push(lastPath);
+              } else {
+                this.props.history.push("/agenda");
+              }
             } else {
               swal("Lo sentimos", result.error.toString(), "error");
             }
@@ -251,6 +258,8 @@ class RegisterPage extends React.Component<Props> {
             </FormCard>
             <div style={{ textAlign: "center" }}>
               Si tiene cuenta, <a href="/login">puede iniciar sesión aquí</a>
+              <br />
+              <Button href="/" className="mt-5">Volver al sitio web</Button>
             </div>
           </StandaloneFormPage>
         )}

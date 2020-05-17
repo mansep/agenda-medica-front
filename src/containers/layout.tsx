@@ -10,12 +10,13 @@ import { Site, RouterContextProvider, Page } from "tabler-react";
 type Props = {
   title: string;
   session: any;
+  isHome?: boolean;
 };
 class Layout extends React.Component<Props> {
   state = {};
 
   render() {
-    const { session } = this.props;
+    const { session, isHome } = this.props;
 
     let user;
     let fullName;
@@ -29,15 +30,51 @@ class Layout extends React.Component<Props> {
       }
     } catch {}
 
-    const navBarItems = [
-      {
-        value: "Inicio",
-        to: "/agenda/",
-        icon: "home",
-        LinkComponent: withRouter(NavLink),
-        useExact: true,
-      },
-    ];
+    let navBarItems: any = [];
+
+    if (isHome) {
+      navBarItems = [
+        {
+          value: "Inicio",
+          to: "/",
+          icon: "home",
+          LinkComponent: withRouter(NavLink),
+          useExact: true,
+        },
+        {
+          value: "Centros médicos",
+          to: "/centros-medicos",
+          icon: "map-pin",
+          LinkComponent: withRouter(NavLink),
+          useExact: true,
+        },
+
+        {
+          value: "Especialidades",
+          to: "/especialidades",
+          icon: "map-pin",
+          LinkComponent: withRouter(NavLink),
+          useExact: true,
+        },
+        {
+          value: "Nosotros",
+          to: "/nosotros",
+          icon: "users",
+          LinkComponent: withRouter(NavLink),
+          useExact: true,
+        },
+      ];
+    } else {
+      navBarItems = [
+        {
+          value: "Inicio",
+          to: "/agenda/",
+          icon: "home",
+          LinkComponent: withRouter(NavLink),
+          useExact: true,
+        },
+      ];
+    }
 
     let reservas: any;
     let admin: any;
@@ -169,21 +206,39 @@ class Layout extends React.Component<Props> {
         }
       }
     }
-    if (reservas) {
+    if (reservas && !isHome) {
       navBarItems.push(reservas);
     }
-    if (admin) {
+    if (admin && !isHome) {
       navBarItems.push(admin);
     }
-    if (config) {
+    if (config && !isHome) {
       navBarItems.push(config);
     }
 
-    const accountDropdownProps = {
-      avatarURL: icon,
-      name: fullName,
-      description: rol,
-      options: [
+    let options = [
+      {
+        icon: "user",
+        value: "Perfil",
+        to: "/agenda/perfil",
+        LinkComponent: withRouter(NavLink),
+      },
+      { isDivider: true },
+      {
+        icon: "log-out",
+        value: "Cerrar sesión",
+        to: "/logout",
+        LinkComponent: withRouter(NavLink),
+      },
+    ];
+    if (isHome && user !== undefined) {
+      options = [
+        {
+          icon: "watch",
+          value: "Ir a agenda",
+          to: "/agenda",
+          LinkComponent: withRouter(NavLink),
+        },
         {
           icon: "user",
           value: "Perfil",
@@ -197,13 +252,39 @@ class Layout extends React.Component<Props> {
           to: "/logout",
           LinkComponent: withRouter(NavLink),
         },
-      ],
+      ];
+    }
+
+    if (isHome && user === undefined) {
+      icon = require("../assets/icons/appointment.png");
+      fullName = "Reservar hora";
+      options = [
+        {
+          icon: "user",
+          value: "Iniciar sesión",
+          to: "/login",
+          LinkComponent: withRouter(NavLink),
+        },
+        { isDivider: true },
+        {
+          icon: "user-plus",
+          value: "Registrar",
+          to: "/register",
+          LinkComponent: withRouter(NavLink),
+        },
+      ];
+    }
+    const accountDropdownProps = {
+      avatarURL: icon,
+      name: fullName,
+      description: rol,
+      options,
     };
 
     return (
       <Site.Wrapper
         headerProps={{
-          href: "/agenda",
+          href: "/",
           alt: "Agenda médica",
           imageURL: logo,
           accountDropdown: accountDropdownProps,

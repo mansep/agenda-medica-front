@@ -1,7 +1,8 @@
 export interface MedicalAppointmentViewDto {
     id: number;
     reservedId: number;
-    reservedStatus: string;
+    reservedPrice: number;
+    reservedStatus: 'CONFIRMED' | 'ACTIVE' | 'CANCELED' | 'DELETED';
     doctorRut: string;
     doctorId: number;
     doctorName: string;
@@ -11,7 +12,8 @@ export interface MedicalAppointmentViewDto {
     officeCode: string;
     officeName: string;
     specialityId: number;
-    specialityode: string;
+    specialityPrice: number;
+    specialityCode: string;
     specialityName: string;
     officeFloor: string;
     buildingId: number;

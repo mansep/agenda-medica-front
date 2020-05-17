@@ -9,13 +9,13 @@ import {
 } from "tabler-react";
 import ReactLoading from "react-loading";
 import swal from "sweetalert";
-import Layout from "../../containers/layout";
-import Table from "../../components/admin/medical-speciality.table";
-import { MedicalSpecialityDto } from "../../api/dto/medical-speciality.dto";
-import { MedicalSpeciality } from "../../api/admin/medical-speciality";
+import Layout from "../../../containers/layout";
+import Table from "../../../components/admin/medical-speciality.table";
+import { MedicalSpecialityDto } from "../../../api/dto/medical-speciality.dto";
+import { MedicalSpeciality } from "../../../api/admin/medical-speciality";
 import { Modal, Button } from "antd";
 import * as Validator from "class-validator";
-import { ResponseDto } from "../../api/dto/response.dto";
+import { ResponseDto } from "../../../api/dto/response.dto";
 
 export default class MedicalSpecialityPage extends Component {
   state = {

@@ -17,6 +17,10 @@ export class MedicalAppointmentReserved {
         return await request.get('/medical-appointment-reserved/me/');
     }
 
+    static async getMeById(id: number) {
+        return await request.get(`/medical-appointment-reserved/me/${id}`);
+    }
+
     static async create(esp: MedicalAppointmentReservedDto) {
         return await request.post('/medical-appointment-reserved/', esp);
     }

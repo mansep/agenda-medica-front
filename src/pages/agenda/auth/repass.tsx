@@ -1,28 +1,24 @@
 import * as React from "react";
 import { Formik } from "formik";
 import { StandaloneFormPage, FormTextInput } from "tabler-react";
-import logo from "../../assets/logo.png";
-import { Auth } from "../../api/auth";
+import logo from "../../../assets/logo.png";
+import { Auth } from "../../../api/auth";
 import { withRouter } from "react-router-dom";
-import { ValidateRut } from "../../api/validate";
-import FormCard from "../../components/form-card";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import { setSession } from "../../redux/action";
+import { ValidateRut } from "../../../api/validate";
+import FormCard from "../../../components/form-card";
 import swal from "sweetalert";
+import { Button } from "antd";
 
 type Props = {
-  setSession: any;
   history: any;
 };
 
-class LoginPage extends React.Component<Props> {
+class RePassPage extends React.Component<Props> {
   render() {
     return (
       <Formik
         initialValues={{
           rut: "",
-          password: "",
         }}
         validate={(values) => {
           let errors = {} as any;
@@ -31,9 +27,6 @@ class LoginPage extends React.Component<Props> {
           }
           if (!ValidateRut.rut(values.rut)) {
             errors.rut = "Rut invalido";
-          }
-          if (!values.password) {
-            errors.password = "Debe ingresar contraseña";
           }
           return errors;
         }}
@@ -48,11 +41,14 @@ class LoginPage extends React.Component<Props> {
               .join()
               .toUpperCase();
             setSubmitting(true);
-            const result = await Auth.login(values);
+            const result = await Auth.recovery(values);
             if (!result.error) {
-              this.props.setSession(result.data);
-              localStorage.setItem("session", JSON.stringify(result.data));
-              this.props.history.push("/agenda");
+              swal(
+                "¡Listo!",
+                `Se ha enviado una nueva contraseña a ${result.data.email}`,
+                "success"
+              );
+              setSubmitting(false);
             } else {
               setSubmitting(false);
               swal("Lo sentimos", result.error.toString(), "error");
@@ -73,8 +69,8 @@ class LoginPage extends React.Component<Props> {
         }) => (
           <StandaloneFormPage imageURL={logo}>
             <FormCard
-              buttonText={"Ingresar"}
-              title={"Acceso de usuario"}
+              buttonText={"Recuperar"}
+              title={"Recuperar contraseña"}
               isLoading={isSubmitting}
               onSubmit={handleSubmit}
             >
@@ -87,19 +83,13 @@ class LoginPage extends React.Component<Props> {
                 value={values && ValidateRut.runFormat(values.rut)}
                 error={errors && errors.rut}
               />
-              <FormTextInput
-                name="password"
-                type="password"
-                label="Contraseña"
-                placeholder="**********"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values && values.password}
-                error={errors && errors.password}
-              />
             </FormCard>
             <div style={{ textAlign: "center" }}>
               Si no tiene cuenta, <a href="/register">registrese aquí</a>
+              <br />
+              <Button href="/login" className="mt-5">
+                Volver al login
+              </Button>
             </div>
           </StandaloneFormPage>
         )}
@@ -108,12 +98,4 @@ class LoginPage extends React.Component<Props> {
   }
 }
 
-const mapDispatchToProps = (dispatch: any) =>
-  bindActionCreators(
-    {
-      setSession,
-    },
-    dispatch
-  );
-
-export default withRouter(connect(null, mapDispatchToProps)(LoginPage));
+export default withRouter(RePassPage);

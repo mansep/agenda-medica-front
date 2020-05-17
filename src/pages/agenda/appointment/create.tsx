@@ -1,28 +1,28 @@
 import React, { Component } from "react";
 
 import { Container, Grid, Card, Form } from "tabler-react";
-import Layout from "../../containers/layout";
+import Layout from "../../../containers/layout";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { UserDto } from "../../api/dto/user.dto";
-import { Users } from "../../api/admin/users";
+import { UserDto } from "../../../api/dto/user.dto";
+import { Users } from "../../../api/admin/users";
 import swal from "sweetalert";
-import { MedicalSpecialityDto } from "../../api/dto/medical-speciality.dto";
-import { MedicalCenterDto } from "../../api/dto/medical-center.dto";
+import { MedicalSpecialityDto } from "../../../api/dto/medical-speciality.dto";
+import { MedicalCenterDto } from "../../../api/dto/medical-center.dto";
 import { Button, DatePicker, TimePicker, Timeline, Select } from "antd";
-import { MedicalAppointmentAvailabilityDto } from "../../api/dto/medical-appointment-availability.dto";
-import { MedicalBuildingDto } from "../../api/dto/medical-building.dto";
-import { MedicalOfficeDto } from "../../api/dto/medical-office.dto";
-import { MedicalBuilding } from "../../api/admin/medical-building";
-import { MedicalAppointment } from "../../api/medical-appointment";
+import { MedicalAppointmentAvailabilityDto } from "../../../api/dto/medical-appointment-availability.dto";
+import { MedicalBuildingDto } from "../../../api/dto/medical-building.dto";
+import { MedicalOfficeDto } from "../../../api/dto/medical-office.dto";
+import { MedicalBuilding } from "../../../api/admin/medical-building";
+import { MedicalAppointment } from "../../../api/medical-appointment";
 import {
   ClockCircleOutlined,
   CloseCircleOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { MedicalOffice } from "../../api/admin/medical-office";
+import { MedicalOffice } from "../../../api/admin/medical-office";
 import moment from "moment";
-import { MedicalAppointmentDto } from "../../api/dto/medical-appointment.dto";
+import { MedicalAppointmentDto } from "../../../api/dto/medical-appointment.dto";
 
 type Props = {
   session?: any;
@@ -74,6 +74,8 @@ class AppointmentCreatePage extends Component<Props, State> {
         return;
       }
       this.setState({ doctors: result.data, isLoading: false });
+    } else {
+      this.setState({ doctor: this.props.session.userDto });
     }
   }
 
@@ -348,8 +350,8 @@ class AppointmentCreatePage extends Component<Props, State> {
                 </Card.Header>
                 <Card.Body>
                   <Grid.Row>
-                    <Grid.Col lg={6}>
-                      {!isDoctor ? (
+                    {!isDoctor ? (
+                      <Grid.Col lg={6}>
                         <Form.Group label="Doctor">
                           <Select
                             showSearch
@@ -384,8 +386,8 @@ class AppointmentCreatePage extends Component<Props, State> {
                             {options}
                           </Select>
                         </Form.Group>
-                      ) : null}
-                    </Grid.Col>
+                      </Grid.Col>
+                    ) : null}
                     <Grid.Col lg={6}>
                       <Form.Group label="Especialidad médica">
                         <Select

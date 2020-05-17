@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 
-import Layout from "../../containers/layout";
+import Layout from "../../../containers/layout";
 import swal from "sweetalert";
 import ReactLoading from "react-loading";
 import { Button, Divider } from "antd";
 import { Container, Grid, Card, Form } from "tabler-react";
-import { Configuration } from "../../api/admin/configuration";
+import { Configuration } from "../../../api/admin/configuration";
 import * as Validator from "class-validator";
-import { ConfigurationDto } from "../../api/dto/configuration.dto";
+import { ConfigurationDto } from "../../../api/dto/configuration.dto";
 
 export default class Settings extends Component {
   state = {

@@ -1,6 +1,7 @@
 import { SERVICIO_ENDPOINT } from './constants';
 import { LoginDto } from './dto/login.dto';
 import { UserDto } from './dto/user.dto';
+import { RecoveryDto } from './dto/recovery.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { Request } from './request';
 
@@ -10,6 +11,11 @@ export class Auth {
     static async login(login: LoginDto) {
         localStorage.removeItem("session");
         return await request.post('/auth/login', login);
+    }
+
+    static async recovery(recovery: RecoveryDto) {
+        localStorage.removeItem("session");
+        return await request.post('/auth/recovery', recovery);
     }
 
     static async register(user: UserDto) {

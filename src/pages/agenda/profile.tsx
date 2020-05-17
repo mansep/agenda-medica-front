@@ -3,18 +3,18 @@ import React from "react";
 import { Container, Grid, Card, Form, FormTextInput } from "tabler-react";
 import { Formik } from "formik";
 import * as Validator from "class-validator";
-import { UserDto } from "../api/dto/user.dto";
+import { UserDto } from "../../api/dto/user.dto";
 import moment from "moment";
 import swal from "@sweetalert/with-react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { setSession } from "../redux/action";
+import { setSession } from "../../redux/action";
 
-import Layout from "../containers/layout";
-import { Auth } from "../api/auth";
+import Layout from "../../containers/layout";
+import { Auth } from "../../api/auth";
 import { Button, Modal } from "antd";
-import { ChangePasswordDto } from "../api/dto/change-password.dto";
+import { ChangePasswordDto } from "../../api/dto/change-password.dto";
 
 type Props = {
   session: any;

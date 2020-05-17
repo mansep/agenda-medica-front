@@ -2,15 +2,15 @@ import React, { Component } from "react";
 import { Container, Grid, Card, FormTextInput, Form, Icon } from "tabler-react";
 import ReactLoading from "react-loading";
 import swal from "sweetalert";
-import Layout from "../../containers/layout";
-import Table from "../../components/admin/users.table";
-import { UserDto } from "../../api/dto/user.dto";
-import { Users } from "../../api/admin/users";
+import Layout from "../../../containers/layout";
+import Table from "../../../components/admin/users.table";
+import { UserDto } from "../../../api/dto/user.dto";
+import { Users } from "../../../api/admin/users";
 import { Modal, Button } from "antd";
-import { ValidateRut } from "../../api/validate";
+import { ValidateRut } from "../../../api/validate";
 import * as Validator from "class-validator";
 import moment from "moment";
-import { ResponseDto } from "../../api/dto/response.dto";
+import { ResponseDto } from "../../../api/dto/response.dto";
 
 export default class UsersPage extends Component {
   state = {

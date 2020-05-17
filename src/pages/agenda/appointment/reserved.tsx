@@ -5,18 +5,18 @@ import { connect } from "react-redux";
 
 import swal from "sweetalert";
 import moment from "moment";
-import Layout from "../../containers/layout";
+import Layout from "../../../containers/layout";
 
 import { Container, Grid, Card, Form } from "tabler-react";
-import { MedicalCenter } from "../../api/admin/medical-center";
-import { MedicalSpeciality } from "../../api/admin/medical-speciality";
-import { MedicalAppointmentViewDto } from "../../api/dto/medical-appointment-view.dto";
-import { MedicalAppointmentReservedDto } from "../../api/dto/medical-appointment-reserved.dto";
+import { MedicalCenter } from "../../../api/admin/medical-center";
+import { MedicalSpeciality } from "../../../api/admin/medical-speciality";
+import { MedicalAppointmentViewDto } from "../../../api/dto/medical-appointment-view.dto";
+import { MedicalAppointmentReservedDto } from "../../../api/dto/medical-appointment-reserved.dto";
 import { List, Skeleton, Avatar, Button, Select } from "antd";
-import { MedicalAppointment } from "../../api/medical-appointment";
-import { MedicalAppointmentReserved } from "../../api/medical-appointment-reserved";
-import { Users } from "../../api/admin/users";
-import { ValidateRut } from "../../api/validate";
+import { MedicalAppointment } from "../../../api/medical-appointment";
+import { MedicalAppointmentReserved } from "../../../api/medical-appointment-reserved";
+import { Users } from "../../../api/admin/users";
+import { ValidateRut } from "../../../api/validate";
 
 const { Option } = Select;
 
@@ -39,6 +39,7 @@ class AppointmentReservedPage extends Component<Props> {
   };
 
   async componentDidMount() {
+    const { isAdmin } = this.state;
     this.setState({ isLoading: true });
     let result = await MedicalCenter.getAll();
     if (result.error) {
@@ -56,14 +57,16 @@ class AppointmentReservedPage extends Component<Props> {
     }
     const especialidades = result.data;
 
-    result = await Users.getAll();
-    if (result.error) {
-      this.setState({ isLoading: false });
-      swal("Lo sentimos", result.error.toString(), "error");
-      return;
+    let usuarios = [];
+    if (isAdmin) {
+      result = await Users.getAll();
+      if (result.error) {
+        this.setState({ isLoading: false });
+        swal("Lo sentimos", result.error.toString(), "error");
+        return;
+      }
+      usuarios = result.data;
     }
-    const usuarios = result.data;
-
     this.setState({ centros, especialidades, usuarios, isLoading: false });
   }
 
@@ -109,6 +112,7 @@ class AppointmentReservedPage extends Component<Props> {
       buttons: ["Cancelar", true],
       dangerMode: true,
     }).then(async (willCreate) => {
+      this.setState({ isLoading: true, isLoadingList: true });
       if (willCreate) {
         const reserva: MedicalAppointmentReservedDto = {
           medicalAppointment: {
@@ -117,6 +121,7 @@ class AppointmentReservedPage extends Component<Props> {
           user: usuario,
         };
         const result = await MedicalAppointmentReserved.create(reserva);
+        this.setState({ isLoading: false, isLoadingList: false });
         if (result.error) {
           swal(
             "Error al reservar hora médica",
@@ -136,6 +141,7 @@ class AppointmentReservedPage extends Component<Props> {
 
   render() {
     const {
+      isAdmin,
       centros,
       especialidades,
       usuarios,
@@ -211,39 +217,48 @@ class AppointmentReservedPage extends Component<Props> {
                   <Card.Title>Reservar hora médica</Card.Title>
                 </Card.Header>
                 <Card.Body>
+                  <div className="d-flex justify-content-center">
+                    <i>
+                      Se aplica 80% de descuento a mayores de 50 años{" "}
+                      {isAdmin ? "y 50% para administradores" : ""}
+                    </i>
+                  </div>
+
                   <Grid.Row>
-                    <Grid.Col lg={12}>
-                      <Form.Group label="Paciente">
-                        <Select
-                          showSearch
-                          placeholder="Seleccione paciente"
-                          optionFilterProp="children"
-                          style={{ width: "100%" }}
-                          onChange={(value) => {
-                            this.setState({
-                              user: { id: Number(value) },
-                            });
-                          }}
-                          filterOption={(input, option) => {
-                            if (option !== undefined) {
-                              if (
-                                option.children !== undefined &&
-                                option.children !== null
-                              ) {
-                                return (
-                                  option.children
-                                    .toLowerCase()
-                                    .indexOf(input.toLowerCase()) >= 0
-                                );
+                    {isAdmin ? (
+                      <Grid.Col lg={12}>
+                        <Form.Group label="Paciente">
+                          <Select
+                            showSearch
+                            placeholder="Seleccione paciente"
+                            optionFilterProp="children"
+                            style={{ width: "100%" }}
+                            onChange={(value) => {
+                              this.setState({
+                                user: { id: Number(value) },
+                              });
+                            }}
+                            filterOption={(input, option) => {
+                              if (option !== undefined) {
+                                if (
+                                  option.children !== undefined &&
+                                  option.children !== null
+                                ) {
+                                  return (
+                                    option.children
+                                      .toLowerCase()
+                                      .indexOf(input.toLowerCase()) >= 0
+                                  );
+                                }
                               }
-                            }
-                            return false;
-                          }}
-                        >
-                          {optionsUsuarios}
-                        </Select>
-                      </Form.Group>
-                    </Grid.Col>
+                              return false;
+                            }}
+                          >
+                            {optionsUsuarios}
+                          </Select>
+                        </Form.Group>
+                      </Grid.Col>
+                    ) : null}
                     <Grid.Col lg={6}>
                       <Form.Group label="Centro médico">
                         <Select
@@ -323,11 +338,18 @@ class AppointmentReservedPage extends Component<Props> {
                           dataSource={data}
                           renderItem={(item) => (
                             <List.Item
-                              actions={[
-                                <Button onClick={() => this.reservar(item)}>
-                                  Reservar
-                                </Button>,
-                              ]}
+                              actions={
+                                isLoadingList
+                                  ? []
+                                  : [
+                                      <Button
+                                        type="primary"
+                                        onClick={() => this.reservar(item)}
+                                      >
+                                        Reservar
+                                      </Button>,
+                                    ]
+                              }
                             >
                               <Skeleton
                                 avatar
@@ -338,7 +360,7 @@ class AppointmentReservedPage extends Component<Props> {
                                 <List.Item.Meta
                                   avatar={
                                     <Avatar
-                                      src={require("../../assets/icons/user-doctor.svg")}
+                                      src={require("../../../assets/icons/user-doctor.svg")}
                                     />
                                   }
                                   title={
