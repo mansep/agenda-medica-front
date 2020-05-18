@@ -179,9 +179,7 @@ export default class MedicalSpecialityPage extends Component {
       errors.precio = "Precio invalido";
     }
 
-    if (!Validator.isAlpha(values.nombre.split(" ").join(""), "es-ES")) {
-      errors.nombre = "Nombre invalido";
-    } else if (Validator.isEmpty(values.nombre)) {
+    if (Validator.isEmpty(values.nombre)) {
       errors.nombre = "Debe ingresar nombre";
     }
     this.setState({ errors });

@@ -168,16 +168,10 @@ export default class MedicalBuildingPage extends Component {
   getErrores = () => {
     const { values, centroMedico } = this.state;
     let errors = {} as any;
-
-    if (!Validator.isAlpha(values.codigo, "es-ES")) {
-      errors.codigo = "Código invalido";
-    } else if (Validator.isEmpty(values.codigo)) {
+    if (Validator.isEmpty(values.codigo)) {
       errors.codigo = "Debe ingresar código";
     }
-
-    if (!Validator.isAlpha(values.nombre.split(" ").join(""), "es-ES")) {
-      errors.nombre = "Nombre invalido";
-    } else if (Validator.isEmpty(values.nombre)) {
+    if (Validator.isEmpty(values.nombre)) {
       errors.nombre = "Debe ingresar nombre";
     }
 
