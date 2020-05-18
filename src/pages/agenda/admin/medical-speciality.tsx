@@ -1,12 +1,5 @@
 import React, { Component } from "react";
-import {
-  Container,
-  Grid,
-  Card,
-  FormTextInput,
-  Form,
-  Icon,
-} from "tabler-react";
+import { Container, Grid, Card, FormTextInput, Form, Icon } from "tabler-react";
 import ReactLoading from "react-loading";
 import swal from "sweetalert";
 import Layout from "../../../containers/layout";
@@ -30,6 +23,7 @@ export default class MedicalSpecialityPage extends Component {
       nombre: "",
       estado: "ACTIVE",
       codigo: "",
+      precio: "",
     },
     errors: {} as any,
   };
@@ -43,6 +37,7 @@ export default class MedicalSpecialityPage extends Component {
         nombre: "",
         estado: "ACTIVE",
         codigo: "",
+        precio: "",
       },
       errors: {} as any,
     });
@@ -57,6 +52,7 @@ export default class MedicalSpecialityPage extends Component {
       values: {
         nombre: esp.name,
         codigo: esp.code,
+        precio: Number(esp.price),
         estado: esp.status,
       },
       errors: {} as any,
@@ -107,6 +103,7 @@ export default class MedicalSpecialityPage extends Component {
     const espSave = {
       name: values.nombre,
       code: values.codigo,
+      price: Number(values.precio),
       status: values.estado,
     };
     if (isNew) {
@@ -157,6 +154,10 @@ export default class MedicalSpecialityPage extends Component {
         this.setState({ values: { ...values, estado: evt.target.value } });
         break;
       }
+      case "precio": {
+        this.setState({ values: { ...values, precio: evt.target.value } });
+        break;
+      }
     }
   };
 
@@ -168,10 +169,14 @@ export default class MedicalSpecialityPage extends Component {
     const { values } = this.state;
     let errors = {} as any;
 
-    if (!Validator.isAlpha(values.codigo, "es-ES")) {
-      errors.codigo = "Código invalido";
-    } else if (Validator.isEmpty(values.codigo)) {
+    if (Validator.isEmpty(values.codigo)) {
       errors.codigo = "Debe ingresar código";
+    }
+
+    if (isNaN(Number(values.precio))) {
+      errors.precio = "Precio invalido";
+    } else if (Validator.isEmpty(values.precio)) {
+      errors.precio = "Precio invalido";
     }
 
     if (!Validator.isAlpha(values.nombre.split(" ").join(""), "es-ES")) {
@@ -281,7 +286,16 @@ export default class MedicalSpecialityPage extends Component {
               onBlur={this.handleBlur}
               value={values && values.nombre}
               error={errors && errors.nombre}
-            />{" "}
+            />
+            <FormTextInput
+              name="precio"
+              label="Precio Bono"
+              placeholder="5000"
+              onChange={this.handleChange}
+              onBlur={this.handleBlur}
+              value={values && values.precio}
+              error={errors && errors.precio}
+            />
             <Form.Group label="Estado">
               <Form.SelectGroup>
                 <Form.SelectGroupItem

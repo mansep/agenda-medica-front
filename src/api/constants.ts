@@ -1,2 +1,2 @@
-export const SERVICIO_ENDPOINT = 'http://localhost:8080';
-export const REQUEST_TIMEOUT = 20;
+export const SERVICIO_ENDPOINT = 'http://api.agendamedica.koisoft.cl';
+export const REQUEST_TIMEOUT = 30;

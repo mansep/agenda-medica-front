@@ -114,6 +114,12 @@ export default class MedicalSpecialityTable extends Component<Props> {
         ...this.getColumnSearchProps("name"),
       },
       {
+        title: "Precio",
+        dataIndex: "price",
+        key: "price",
+        ...this.getColumnSearchProps("price"),
+      },
+      {
         title: "Estado",
         dataIndex: "estado",
         key: "estado",
