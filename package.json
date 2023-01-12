@@ -9,7 +9,7 @@
     "@testing-library/user-event": "^7.2.1",
     "antd": "^4.2.0",
     "axios": "^0.19.2",
-    "class-validator": "^0.12.2",
+    "class-validator": "^0.14.0",
     "formik": "^2.1.4",
     "jwt-decode": "^2.2.0",
     "moment": "^2.24.0",
